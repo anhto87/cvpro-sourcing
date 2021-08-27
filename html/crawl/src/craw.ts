@@ -32,7 +32,7 @@ async function scrapeWithSchedule() {
         })
     VietNamWorkWithPage('https://www.vietnamworks.com/tim-viec-lam/tat-ca-viec-lam'); //200 done
 }
-const job = new CronJob('0 07 */1 * * *', function () {
+const job = new CronJob('0 14 */1 * * *', function () {
     Logger.info('Start Job scrapeWithSchedule')
     scrapeWithSchedule();
 }, null, true, 'Asia/Ho_Chi_Minh');

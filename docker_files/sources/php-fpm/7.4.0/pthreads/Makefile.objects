@@ -1,0 +1,26 @@
+php_pthreads.lo: /tmp/pthreads/php_pthreads.c
+	$(LIBTOOL) --mode=compile $(CC) -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 -I. -I/tmp/pthreads $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /tmp/pthreads/php_pthreads.c -o php_pthreads.lo 
+src/monitor.lo: /tmp/pthreads/src/monitor.c
+	$(LIBTOOL) --mode=compile $(CC) -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 -I. -I/tmp/pthreads $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /tmp/pthreads/src/monitor.c -o src/monitor.lo 
+src/stack.lo: /tmp/pthreads/src/stack.c
+	$(LIBTOOL) --mode=compile $(CC) -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 -I. -I/tmp/pthreads $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /tmp/pthreads/src/stack.c -o src/stack.lo 
+src/globals.lo: /tmp/pthreads/src/globals.c
+	$(LIBTOOL) --mode=compile $(CC) -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 -I. -I/tmp/pthreads $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /tmp/pthreads/src/globals.c -o src/globals.lo 
+src/prepare.lo: /tmp/pthreads/src/prepare.c
+	$(LIBTOOL) --mode=compile $(CC) -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 -I. -I/tmp/pthreads $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /tmp/pthreads/src/prepare.c -o src/prepare.lo 
+src/store.lo: /tmp/pthreads/src/store.c
+	$(LIBTOOL) --mode=compile $(CC) -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 -I. -I/tmp/pthreads $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /tmp/pthreads/src/store.c -o src/store.lo 
+src/resources.lo: /tmp/pthreads/src/resources.c
+	$(LIBTOOL) --mode=compile $(CC) -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 -I. -I/tmp/pthreads $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /tmp/pthreads/src/resources.c -o src/resources.lo 
+src/handlers.lo: /tmp/pthreads/src/handlers.c
+	$(LIBTOOL) --mode=compile $(CC) -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 -I. -I/tmp/pthreads $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /tmp/pthreads/src/handlers.c -o src/handlers.lo 
+src/object.lo: /tmp/pthreads/src/object.c
+	$(LIBTOOL) --mode=compile $(CC) -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 -I. -I/tmp/pthreads $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /tmp/pthreads/src/object.c -o src/object.lo 
+src/socket.lo: /tmp/pthreads/src/socket.c
+	$(LIBTOOL) --mode=compile $(CC) -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 -I. -I/tmp/pthreads $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /tmp/pthreads/src/socket.c -o src/socket.lo 
+$(phplibdir)/pthreads.la: ./pthreads.la
+	$(LIBTOOL) --mode=install cp ./pthreads.la $(phplibdir)
+
+./pthreads.la: $(shared_objects_pthreads) $(PTHREADS_SHARED_DEPENDENCIES)
+	$(LIBTOOL) --mode=link $(CC) $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS) $(LDFLAGS) -o $@ -export-dynamic -avoid-version -prefer-pic -module -rpath $(phplibdir) $(EXTRA_LDFLAGS) $(shared_objects_pthreads) $(PTHREADS_SHARED_LIBADD)
+

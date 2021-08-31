@@ -1,0 +1,6 @@
+**/databases/*
+**/node_modules/*
+**/crawl/images/*
+keys/*
+**/logs/*
+**/.idea/*

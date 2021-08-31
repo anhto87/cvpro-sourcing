@@ -8,6 +8,7 @@ import { GlobalContext } from './context';
 import { AppLayout } from './layouts/app.layout';
 import { isTokenLogged } from './utils';
 import { RELOAD_LOGGED } from './reducer/auth.actions';
+import { Home } from '../Modules/Home';
 
 export const ProtectedRouter = ({ component: Component, ...rest }) => {
     const { stateAuth, dispatchAuth } = useContext(GlobalContext);
@@ -38,8 +39,9 @@ const AppRouter = () => {
     return (
         <Router>
             <AppLayout>
+                <Route exact path="/" component={Home} />
                 <Route exact path="/login" component={Login} />
-                <ProtectedRouter exact path="/" component={Dashboard} />
+                {/* <ProtectedRouter exact path="/" component={Dashboard} /> */}
                 <ProtectedRouter
                     exact
                     path="/dashboard/:id"
@@ -54,3 +56,4 @@ const AppRouter = () => {
 };
 
 export default AppRouter;
+

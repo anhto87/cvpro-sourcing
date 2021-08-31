@@ -1,3 +1,39 @@
 {
-  "Xin chao": "Xin chào"
+  "home": {
+    "login": "Đăng nhập",
+    "postJob": "Đăng việc làm",
+    "keyword": "Từ khoá",
+    "keywordPlaceholder": "Tên việc, công ty, từ khoá",
+    "address": "Địa chỉ",
+    "addressPlaceholder": "Thành phố, quận, huyện",
+    "searchButton": "Tìm việc làm",
+    "searchRecents": "Tìm kiếm gần đây",
+    "delete": "Xoá",
+    "totalJob": "việc – Trang",
+    "of": "của",
+    "new": "Mới",
+    "save": "Lưu lại",
+    "skill": "Kỹ năng: ",
+    "experience": "Kinh nghiệm: ",
+    "jobType": "Hình thức làm việc",
+    "publishDate": "Ngày đăng",
+    "allTime": "Mọi thời gian",
+    "hour": "{{val}} giờ qua",
+    "oneDay": "{{val}} ngày",
+    "day": "{{val}} ngày",
+    "allJob": "Mọi loại việc",
+    "fullTime": "Full Time",
+    "permanent": "Chính Thức",
+    "partTime": "Bán thời gian",
+    "internship": "Thực Tập",
+    "online": "Online",
+    "other": "Khác"
+  },
+  "common": {
+    "noDataTitle": "Chúng tôi không tìm thấy việc nào phù hợp với tìm kiếm của bạn",
+    "noDataTitleContent": "Hãy thử như sau:",
+    "noDataReason1": "Xin bạn chắc chắn rằng tất cả các từ đều đúng chính tả.",
+    "noDataReason2": "Hãy thử những từ khóa khác.",
+    "noDataReason3": "Hãy thử những từ khóa chung hơn"
+  }
 }

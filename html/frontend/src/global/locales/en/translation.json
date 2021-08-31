@@ -1,3 +1,39 @@
 {
-  "Xin chao": "Hello"
+  "home": {
+    "login": "Login",
+    "postJob": "Post a job",
+    "keyword": "Keyword",
+    "keywordPlaceholder": "Job title, company, keywords",
+    "address": "Address",
+    "addressPlaceholder": "City, county, district",
+    "searchButton": "Find a job",
+    "searchRecents": "Recent Search",
+    "delete": "Delete",
+    "totalJob": "jobs – Page",
+    "of": "of",
+    "new": "New",
+    "save": "Save",
+    "skill": "Skills: ",
+    "experience": "Experience: ",
+    "jobType": "Job Type",
+    "publishDate": "Publish Date",
+    "allTime": "All Time",
+    "hour": "Last {{val}} hours",
+    "oneDay": "{{val}} day",
+    "day": "{{val}} days",
+    "allJob": "All Job",
+    "fullTime": "Full Time",
+    "permanent": "Permanent",
+    "partTime": "Part Time",
+    "internship": "Internship",
+    "online": "Online",
+    "other": "Others"
+  },
+  "common": {
+    "noDataTitle": "We do not find the job that matches your search.",
+    "noDataTitleContent": "Try the following:",
+    "noDataReason1": "Please make sure all words are spelled correctly.",
+    "noDataReason2": "Try other keywords.",
+    "noDataReason3": "Try more general keywords"
+  }
 }

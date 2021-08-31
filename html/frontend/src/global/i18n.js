@@ -1,5 +1,3 @@
-import { reactLocalStorage } from 'reactjs-localstorage';
-import _ from 'lodash';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import translation_vi from './locales/vi/translation.json';
@@ -16,10 +14,8 @@ const resources = {
 
 i18n.use(initReactI18next).init({
     resources,
-    lng: 'vi',
-
-    keySeparator: false, // we do not use keys in form messages.welcome
-
+    lng: 'en',
+    // keySeparator: false, // we do not use keys in form messages.welcome
     interpolation: {
         escapeValue: false, // react already safes from xss
     },

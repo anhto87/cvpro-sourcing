@@ -1,0 +1,72 @@
+.header {
+    padding-left: 50px;
+    padding-right: 20px;
+    min-height: 40px;
+}
+
+.logo-header {
+    font-size: 35px;
+    font-weight: 600;
+    color: 'black';
+}
+
+.content {
+    max-width: 920px;
+    justify-content: center;
+}
+
+.input-item {
+    width: 350px !important;
+    margin-right: 1.5em !important;
+}
+
+.input-item div.ant-form-item-label {
+    padding: 0px;
+    line-height: 1.5;
+    text-align: left;
+}
+
+.submit-button {
+    height: 50px !important;
+    padding-left: 40px !important;
+    padding-right: 40px !important;
+    color: white !important;
+}
+
+button.link span:hover,
+a.job-link:hover {
+    text-decoration: underline !important;
+}
+
+button.linka a:hover {
+    text-decoration: underline;
+}
+
+.job-location {
+    color: #656664 !important;
+}
+
+.job-skill {
+    padding: 5px;
+    margin-right: 10px;
+    margin-bottom: 7px;
+    border: 1px solid #dedede;
+    color: #171a17;
+    font-weight: 400;
+    text-align: center;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.listed-date {
+    color: #656664;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.title-info {
+    color: #202020;
+    margin-bottom: 5px;
+    font-size: 15px;
+    margin-top: 10px;
+}

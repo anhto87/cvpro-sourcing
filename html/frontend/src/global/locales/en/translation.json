@@ -13,8 +13,8 @@
     "of": "of",
     "new": "New",
     "save": "Save",
-    "skill": "Skills: ",
-    "experience": "Experience: ",
+    "skill": "Skill",
+    "experience": "Experience",
     "jobType": "Job Type",
     "publishDate": "Publish Date",
     "allTime": "All Time",
@@ -27,7 +27,12 @@
     "partTime": "Part Time",
     "internship": "Internship",
     "online": "Online",
-    "other": "Others"
+    "other": "Others",
+    "from": "from",
+    "workLocation": "Work Location",
+    "career": "Career",
+    "salary": "Salary",
+    "apply": "APPLY NOW"
   },
   "common": {
     "noDataTitle": "We do not find the job that matches your search.",

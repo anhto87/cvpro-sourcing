@@ -3,7 +3,7 @@
  * 
  * 
  */
-
+export const LogoName = "JobStreet";
 export const StorageSearchRecents = "SearchRecents";
 export const LIMIT = 10;
 
@@ -27,4 +27,3 @@ export const FilterJobTypes = {
     online: 'online',
     other: 'khác',
 }
-

@@ -13,8 +13,8 @@
     "of": "của",
     "new": "Mới",
     "save": "Lưu lại",
-    "skill": "Kỹ năng: ",
-    "experience": "Kinh nghiệm: ",
+    "skill": "Kỹ năng",
+    "experience": "Kinh nghiệm",
     "jobType": "Hình thức làm việc",
     "publishDate": "Ngày đăng",
     "allTime": "Mọi thời gian",
@@ -27,7 +27,12 @@
     "partTime": "Bán thời gian",
     "internship": "Thực Tập",
     "online": "Online",
-    "other": "Khác"
+    "other": "Khác",
+    "from": "từ",
+    "workLocation": "Địa điểm làm việc",
+    "career": "Ngành nghề",
+    "salary": "Mức lương",
+    "apply": "ỨNG TUYỂN NGAY"
   },
   "common": {
     "noDataTitle": "Chúng tôi không tìm thấy việc nào phù hợp với tìm kiếm của bạn",

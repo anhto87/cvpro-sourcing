@@ -7,7 +7,7 @@ import { BsBookmark } from 'react-icons/bs';
 import { NoData } from './NoData';
 const { Text, Paragraph, Link } = Typography;
 
-export const ListJobs = ({ items, isLoading, page, totalPage, totalJob, loadMore, limit }) => {
+export const ListJobs = ({ items, isLoading, page, totalPage, totalJob, loadMore, limit, onPressLink }) => {
     const { t } = useTranslation()
     const emptys = [0, 1, 2, 3, 4, 5];
 
@@ -48,8 +48,8 @@ export const ListJobs = ({ items, isLoading, page, totalPage, totalJob, loadMore
                         <Skeleton key={item?._id} loading={isLoading} active>
                             <List.Item key={item?._id} className="padHorizontal0">
                                 <Row justify="space-between" align="top" wrap={false} gutter={5}>
-                                    <Col>
-                                        <Link level={5} className="job-link"> {item?.jobTitle || ''}</Link>
+                                    <Col flex="auto">
+                                        <Link level={5} className="job-link" onClick={() => onPressLink(item)}> {item?.jobTitle || ''}</Link>
                                         <div>
                                             <Text className="fontW600">
                                                 {item?.company || ''}
@@ -70,7 +70,7 @@ export const ListJobs = ({ items, isLoading, page, totalPage, totalJob, loadMore
                                             {addtions.length > 0 && <Text>{addtions.join(' - ')}</Text>}
                                         </Row>
                                     </Col>
-                                    <Col>
+                                    <Col flex="60px">
                                         <div className="font13" style={{ padding: '2px 10px', backgroundColor: '#2979c4', color: 'white', borderRadius: 2 }}>
                                             {t('home.new')}
                                         </div>
@@ -100,5 +100,6 @@ ListJobs.propTypes = {
     totalPage: PropTypes.number,
     totalJob: PropTypes.number,
     loadMore: PropTypes.func,
-    limit: PropTypes.number
+    limit: PropTypes.number,
+    onPressLink: PropTypes.func
 }

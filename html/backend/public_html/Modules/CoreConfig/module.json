@@ -1,0 +1,13 @@
+{
+    "name": "CoreConfig",
+    "alias": "coreconfig",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\CoreConfig\\Providers\\CoreConfigServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

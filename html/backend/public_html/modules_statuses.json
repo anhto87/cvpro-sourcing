@@ -1,0 +1,7 @@
+{
+    "Jobs": true,
+    "Users": true,
+    "CoreConfig": true,
+    "Candidates": true,
+    "CandidateJobs": true
+}

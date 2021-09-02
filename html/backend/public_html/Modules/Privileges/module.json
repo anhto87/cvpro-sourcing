@@ -1,0 +1,13 @@
+{
+    "name": "Privileges",
+    "alias": "privileges",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Privileges\\Providers\\PrivilegesServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

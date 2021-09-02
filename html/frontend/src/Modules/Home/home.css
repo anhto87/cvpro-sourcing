@@ -1,0 +1,78 @@
+.padding20 {
+    padding: 20px;
+}
+
+.paddingRight30 {
+    padding-right: 30px;
+}
+
+.logo-container {
+    font-size: 65px;
+    font-weight: 600;
+}
+
+.header {
+    padding-left: 50px;
+    padding-right: 20px;
+    min-height: 40px;
+}
+
+.logo-header {
+    font-size: 35px;
+    font-weight: 600;
+    color: 'black';
+}
+
+.content {
+    max-width: 920px;
+    justify-content: center;
+}
+
+.input-item {
+    width: 350px !important;
+    margin-right: 1.5em !important;
+}
+
+.input-item div.ant-form-item-label {
+    padding: 0px;
+    line-height: 1.5;
+    text-align: left;
+}
+
+.submit-button {
+    height: 50px !important;
+    padding-left: 40px !important;
+    padding-right: 40px !important;
+    color: white !important;
+}
+
+button.link span:hover,
+a.job-link:hover {
+    text-decoration: underline !important;
+}
+
+button.linka a:hover {
+    text-decoration: underline;
+}
+
+.total-job {
+    font-size: 17px !important;
+    margin-left: 1em;
+    margin-right: 1em;
+    margin-bottom: 1em;
+    color: #171a17 !important;
+    font-weight: 400 !important;
+}
+
+.job-link {
+    font-weight: 700 !important;
+    color: #171a17 !important;
+}
+
+.job-link:hover {
+    text-decoration: underline;
+}
+
+.left-content {
+    margin-right: 20px;
+}

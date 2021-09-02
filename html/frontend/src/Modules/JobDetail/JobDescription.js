@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography } from 'antd';
-import { vietnamwork } from '../../global/helpers';
+import { NhanSuVietNam, vietnamwork } from '../../global/helpers';
 const { Text } = Typography;
 
 export const JobDescription = ({ job }) => {
@@ -8,7 +8,7 @@ export const JobDescription = ({ job }) => {
 
     if (job) {
         const domain = job?.domain || '';
-        if (domain.includes(vietnamwork)) {
+        if (domain.includes(vietnamwork) || domain.includes(NhanSuVietNam)) {
             const jobRequirement = job?.jobRequirement || '';
             const jobDescription = job?.jobDescription || '';
             return <>

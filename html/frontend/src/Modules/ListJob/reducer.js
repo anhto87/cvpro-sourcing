@@ -5,7 +5,7 @@
  * 
  */
 
-import { LOADDING, LOAD_COMPLETE, UPDATEFORM, UPDATE_PAGE, RESET, JOB_SUGGEST } from "./actions";
+import { LOADING, LOAD_COMPLETE, UPDATE_FORM, UPDATE_PAGE, RESET, JOB_SUGGEST } from "./actions";
 
 const initForm = { keyword: null, address: null, time: null, jobType: null, page: null };
 export const initialValues = {
@@ -22,7 +22,7 @@ export const initialValues = {
 export const reducer = (state, action) => {
     const { type, payload } = action;
     switch (type) {
-        case UPDATEFORM:
+        case UPDATE_FORM:
             const newState = {
                 ...state,
                 form: {
@@ -57,7 +57,7 @@ export const reducer = (state, action) => {
                 limit,
                 isLoading: false
             }
-        case LOADDING:
+        case LOADING:
             return {
                 ...state,
                 isLoading: payload

@@ -1,12 +1,16 @@
 import './ListJob.css';
 import React, { useEffect, useReducer } from 'react';
 import { useLocation, useHistory } from "react-router-dom";
-import { Row, Col, Button, Form, Input, Layout, Typography } from 'antd';
-import { useTranslation } from 'react-i18next';
-import { GoLocation } from 'react-icons/go';
-import { BsSearch } from 'react-icons/bs';
+import { Row, Col, Form, Layout, Typography } from 'antd';
 import { useLocalStorage } from '../../global/hooks';
-import { StorageSearchRecents, FilterTimes, FilterJobTypes, getJobDetailURL, LogoName } from '../../global/helpers';
+import {
+    StorageSearchRecents,
+    FilterTimes,
+    FilterJobTypes,
+    getJobDetailURL,
+    LogoName,
+    getListJobURL
+} from '../../global/helpers';
 import _ from 'lodash';
 import { ListJobs } from './components/ListJobs';
 import apis from '../../global/helpers/apis';
@@ -14,16 +18,18 @@ import { Filter } from './components/Filter';
 import { reducer, initialValues } from './reducer';
 import { jobsSuggestAction, loadCompletedAction, loading, resetAction, updateFormValues, updatePageAction } from './actions';
 import { SearchForm } from '../../components/SearchForm';
+import { ListJobSuggest } from './components/ListJobSuggest';
 const { Content, Footer } = Layout;
-const INPUT_HEIGHT = 45;
 
+const init = (initial) => {
+    return initial
+}
 export const ListJob = () => {
-    const { t } = useTranslation();
     const [form] = Form.useForm();
     const location = useLocation();
     const history = useHistory();
     const [recents, setSearchRecents] = useLocalStorage(StorageSearchRecents, []);
-    const [state, dispatch] = useReducer(reducer, initialValues);
+    const [state, dispatch] = useReducer(reducer, initialValues, init);
     const query = new URLSearchParams(location.search);
 
     const updateForm = (payload) => dispatch(updateFormValues(payload));
@@ -58,7 +64,7 @@ export const ListJob = () => {
     useEffect(() => {
         const isLoading = state?.isLoading || false;
         if (isLoading) {
-            getListJobs()
+            getListJobs().then(r => console.log(r));
         }
     }, [state?.isLoading])
 
@@ -70,7 +76,7 @@ export const ListJob = () => {
         }
         const page = state?.form?.page || 1;
         updateForm({ ...state.form, keyword, address });
-        if (page != 1) {
+        if (page !== 1) {
             updatePage(1);
         } else {
             fetchData(true);
@@ -106,7 +112,7 @@ export const ListJob = () => {
     }
 
     const loadMore = (newPage) => {
-        if (newPage != state?.form?.page) {
+        if (newPage !== state?.form?.page) {
             updatePage(newPage);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -119,18 +125,8 @@ export const ListJob = () => {
         const keyword = form.keyword || '';
         const address = form.address || '';
         const page = form?.page || 1;
-        let querys = { keyword, address };
-        if (xLast && xLast !== FilterTimes.all) {
-            querys['t'] = xLast;
-        }
-        if (jobType && jobType !== FilterJobTypes.all) {
-            querys['type'] = jobType;
-        }
-        if (page !== 1) {
-            querys['page'] = page;
-        }
-        let searchParams = new URLSearchParams(querys).toString();
-        history.replace(`/tim-viec?${searchParams}`);
+        const url = getListJobURL({ keyword, address, page, jobType, time:xLast})
+        history.replace(url);
     }
 
     const onPressGoHome = () => {
@@ -140,7 +136,7 @@ export const ListJob = () => {
     }
 
     const onPressLink = (item) => {
-        let pathname = getJobDetailURL({ jobId: item._id })
+        let pathname = getJobDetailURL(item)
         history.push({ pathname, state: item });
     }
 
@@ -187,15 +183,7 @@ export const ListJob = () => {
                             </Col>
                         </Row>
                     </div>
-                    {suggests.length > 0 && (
-                        <div style={{ width: 350, paddingTop: 150, paddingLeft: 40, paddingRight: 20 }}>
-                            <div className="border borderRadius5 widthP100">
-                                <Row style={{ height: 1000 }}>
-                                    {suggests.length}
-                                </Row>
-                            </div>
-                        </div>
-                    )}
+                    <ListJobSuggest items={suggests} onPressLink={onPressLink}/>
                 </Row>
             </Content>
             <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>

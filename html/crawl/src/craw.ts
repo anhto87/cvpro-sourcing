@@ -1,12 +1,13 @@
-import { VietNamWorkAll, VietNamWorkWithPage } from "./crawl/vietnamworks";
-import puppeteer from 'puppeteer';
+import {VietNamWorkWithPage} from "./crawl";
 import Logger from "./crawl/Log";
 import Crawl from './crawl/craw'
 import { CronJob } from 'cron';
 import './database';
+import {createPuppeteerBrowser} from "./crawl/helper";
 
 async function scrapeWithSchedule() {
-    const newBrowser = await puppeteer.launch({ headless: true, defaultViewport: null, args: ['--no-sandbox', '--disable-setuid-sandbox']});
+
+    const newBrowser = await createPuppeteerBrowser();
     let job1 = Promise.all([
         Crawl.all('https://www.vlance.vn/viec-lam-freelance', newBrowser, 5), //10job/page
         Crawl.all('https://careerbuilder.vn/viec-lam/tat-ca-viec-lam-vi.html', newBrowser, 1), //50job/page
@@ -24,17 +25,16 @@ async function scrapeWithSchedule() {
     ])
 
     Promise.all([job1, job2])
-        .then((values) => {
+        .then(() => {
             Logger.info("Craw data done");
             newBrowser.close();
         }).catch(e => {
-            Logger.error(`Craw data done ${e}`);
-        })
-    VietNamWorkWithPage('https://www.vietnamworks.com/tim-viec-lam/tat-ca-viec-lam'); //200 done
+        Logger.error(`Craw data done ${e}`);
+    })
 }
 const job = new CronJob('0 14 */1 * * *', function () {
     Logger.info('Start Job scrapeWithSchedule')
-    scrapeWithSchedule();
+    scrapeWithSchedule().then((r) => console.log(r));
 }, null, true, 'Asia/Ho_Chi_Minh');
 
 job.start();

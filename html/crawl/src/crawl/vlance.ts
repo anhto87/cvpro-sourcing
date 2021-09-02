@@ -3,7 +3,7 @@ import { Prefix } from './constants/constant';
 import { Job, saveJob } from '../database/entities';
 import Logger from './Log';
 import { CareerBuilderJob } from './careerbuilder';
-import { convertTimeAgoToDate, convertToJob, scrollToBottom } from './helper';
+import {convertExpireDate, convertTimeAgoToDate, convertToJob, scrollToBottom} from './helper';
 import md5 from 'md5';
 import config from '../database/config';
 
@@ -97,8 +97,7 @@ const getJobDetail = (): CareerBuilderJob => {
         if (title.includes('ID dự án')) {
             jobId = nextElement?.textContent?.trim() || '';
         } else if (title.includes('Ngày đăng')) {
-            let components = (nextElement?.textContent?.trim() || '').split(',');
-            publishedDate = components.length > 0 ? components[0] : "";
+            publishedDate = nextElement?.textContent?.trim() || ''
         } else if (title.includes('Hình thức làm việc')) {
             jobType = nextElement?.textContent?.trim() || '';
         }
@@ -125,11 +124,14 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
             await pageDetail.goto(job.link!, { waitUntil: 'networkidle0', timeout: 0 });
             const jobDetail = await pageDetail.evaluate(getJobDetail);
             await pageDetail.close();
+            const publishedDate = convertTimeAgoToDate(jobDetail.publishedDate || '');
+            const expiredDate = convertExpireDate(job.expiredDate || '');
             const item = convertToJob({
                 ...job,
                 ...jobDetail,
                 jobId: Prefix.vlance + jobDetail.jobId ? jobDetail.jobId : md5(job.link || ''),
-                expiredDate: convertTimeAgoToDate(job.expiredDate || '')
+                expiredDate,
+                publishedDate
             });
             await saveJob(item);
             const number = (Math.floor(Math.random() * (config.maxDelayTime - config.minDelayTime)) + config.minDelayTime) * 1000;

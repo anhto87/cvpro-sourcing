@@ -1,7 +1,7 @@
 import puppeteer, { Browser } from 'puppeteer';
 import { URLConstants } from './constants/constant';
 import Logger from './Log';
-import { setHeader } from './helper';
+import {createPuppeteerBrowser, setHeader} from './helper';
 import { JobsGo, CareerLink, TimViecNhanh, ITViec, Vieclam24h, TopCv, CareerBuilder, ViecTotNhat, TopDev, vlance, yBox } from './index'
 
 async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppeteer.Page, maxItem: number = 100) {
@@ -67,7 +67,7 @@ const getTotalItems = async (page: puppeteer.Page, url: string): Promise<number 
 
 async function page(url: string, browser?: puppeteer.Browser) {
     try {
-        const newBrowser = browser || await puppeteer.launch({ headless: true, defaultViewport: null, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+        const newBrowser = browser || await createPuppeteerBrowser();
         const page = await newBrowser.newPage();
         await setHeader(page);
         let items = await getJobInPage(url, newBrowser, page);
@@ -86,7 +86,7 @@ async function page(url: string, browser?: puppeteer.Browser) {
 
 async function all(url: string, browser?: puppeteer.Browser, maxPage: number = 1000) {
     try {
-        const newBrowser = browser || await puppeteer.launch({ headless: true, defaultViewport: null, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+        const newBrowser = browser || await createPuppeteerBrowser();
         const page = await newBrowser.newPage();
         await setHeader(page);
         let nextPage: string | null | undefined = url;
@@ -112,7 +112,7 @@ async function all(url: string, browser?: puppeteer.Browser, maxPage: number = 1
 
 async function pageInfinite(url: string, browser?: puppeteer.Browser, maxItem: number = 20) {
     try {
-        const newBrowser = browser || await puppeteer.launch({ headless: false, defaultViewport: null, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+        const newBrowser = browser || await createPuppeteerBrowser();
         const page = await newBrowser.newPage();
         await setHeader(page);
         let totalJob: number = 0;

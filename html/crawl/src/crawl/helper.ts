@@ -3,6 +3,25 @@ import puppeteer from 'puppeteer';
 import { Job } from '../database/entities';
 import { CareerBuilderJob } from './careerbuilder';
 
+export const slugify = (str: string, separator = "-") => {
+    return str
+        .toString()
+        .normalize('NFD')                   // split an accented letter in the base letter and the acent
+        .replace(/[\u0300-\u036f]/g, '')   // remove all previously split accents
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9 ]/g, '')   // remove all chars not letters, numbers and spaces (to be replaced)
+        .replace(/\s+/g, separator);
+};
+
+export const createPuppeteerBrowser = async () => {
+    return await puppeteer.launch({
+        headless: true,
+        defaultViewport: null,
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    })
+}
+
 export async function setHeader(page: puppeteer.Page) {
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.109 Safari/537.36');
 }
@@ -22,7 +41,7 @@ export async function scrollToBottom(page: puppeteer.Page) {
 }
 
 export function clean(obj: any) {
-    for (var propName in obj) {
+    for (const propName in obj) {
         if (obj[propName] === null || obj[propName] === undefined) {
             delete obj[propName];
         }
@@ -54,6 +73,13 @@ export const convertToJob = (job: CareerBuilderJob): Job => {
     const expiredDate = toDate(job.expiredDate);
     const onlineDate = toDate(job.onlineDate);
 
+    const jobTitleSlug = slugify(job.jobTitle?.trim() || '');
+    const locations = job.locations || [];
+    const locationsEN = locations.map(ele => slugify(ele, ' '));
+    const expiredTimestamp = expiredDate ? expiredDate?.getTime() / 1000 : undefined;
+    const onlineTimestamp = onlineDate ? onlineDate?.getTime() / 1000 : undefined;
+    const publishedTimestamp = publishedDate ? publishedDate?.getTime() / 1000 : undefined;
+
     return {
         jobId: job.jobId?.trim(),
         jobTitle: job.jobTitle?.trim(),
@@ -64,7 +90,8 @@ export const convertToJob = (job: CareerBuilderJob): Job => {
         experience: job.experience?.trim(),
         jobType: job.jobType?.trim(),
         jobLocations: job.jobLocations,
-        locations: job.locations,
+        locations,
+        locationsEN,
         categories: job.categories,
         skills: job.skills,
         benefits: job.benefits,
@@ -73,23 +100,15 @@ export const convertToJob = (job: CareerBuilderJob): Job => {
         publishedDate,
         expiredDate,
         onlineDate,
-        salary: job.salary?.trim()
+        salary: job.salary?.trim(),
+        jobTitleSlug,
+        publishedTimestamp,
+        expiredTimestamp,
+        onlineTimestamp
     }
 }
-//Cập nhật 4 phút trước
-//Cập nhật 5 giờ trước
-//Cập nhật 2 tuần trước
-//Cập nhật 1 ngày trước
-//1h
-//1d
-//5 hours ago
-//1 day ago
-//2 tháng trước
-// 40 giây trước
-//tháng trước
-//Hôm qua
+
 export const convertTimeAgoToDate = (time: string) => {
-    console.log(time);
     if (time.length < 4) {
         if (time.includes('h')) {
             let number = parseInt(time.replace('h', '').trim());
@@ -111,9 +130,17 @@ export const convertTimeAgoToDate = (time: string) => {
     }
 
     //28 ngày 12 giờ
+    console.log(components)
     if (time.includes('ngày') && time.includes('giờ') && components.length === 4) {
-        let date = moment().add(parseInt(components[0]), 'day')
-        return date.add(parseInt(components[2]), 'hour').toISOString()
+        let date = moment().add(-parseInt(components[0]), 'day')
+        return moment(date).add(-parseInt(components[2]), 'hour').toISOString()
+    }
+
+    //4 giờ, 7 phút trước
+    if (time.includes('giờ') && time.includes('phút') && components.length === 5) {
+        let date = moment().add(-parseInt(components[0]), 'hour');
+        let dateString = moment(date).add(-parseInt(components[2]), 'minute').toISOString();
+        return  dateString;
     }
 
     let number = parseInt(components[0]);
@@ -145,12 +172,63 @@ export const convertTimeAgoToDate = (time: string) => {
         return moment().add(-(isNaN(number) ? 1 : number), 'month').toISOString()
     }
 
+    // Hôm qua, 21:54
+    if (time.includes('Hôm qua,')) {
+        const yesterday = moment().add(-1, 'day');
+        const newTime = time.replace('Hôm qua', yesterday.format('DD/MM/YYYY'))
+        return moment(newTime, 'DD/MM/YYYY, HH:mm').toISOString()
+    }
+
+    // Hôm nay, 13:50
+    if (time.includes('Hôm nay,')) {
+        const today = moment();
+        const newTime = time.replace('Hôm nay', today.format('DD/MM/YYYY'))
+        return moment(newTime, 'DD/MM/YYYY, HH:mm').toISOString()
+    }
+
+    if (time.includes('Hôm kia,')) {
+        const yesterday = moment().add(-2, 'day');
+        const newTime = time.replace('Hôm nay', yesterday.format('DD/MM/YYYY'))
+        return moment(newTime, 'DD/MM/YYYY, HH:mm').toISOString()
+    }
+
     if (time.includes('Hôm qua')) {
         return moment().add(-1, 'day').toISOString()
     }
 
     if (time.includes('Hôm kia')) {
         return moment().add(-2, 'day').toISOString()
+    }
+
+    //14/08/2021, 17:41
+    if (moment(time, 'DD/MM/YYYY, HH:mm', true).isValid()) {
+        return moment(time, 'DD/MM/YYYY, HH:mm').toISOString()
+    }
+
+    return ''
+}
+
+export const convertExpireDate = (time: string) => {
+    if (time === "Đã chọn freelancer" || time === 'Hết hạn chào giá ') {
+        return undefined;
+    }
+    let components = time.trim().split(' ');
+    if (components.length < 0) {
+        return ''
+    }
+
+    //2 ngày 22 giờ
+    if (time.includes('ngày') && time.includes('giờ') && components.length === 4) {
+        let date = moment().add(parseInt(components[0]), 'day')
+        let dateString = moment(date).add(parseInt(components[2]), 'hour').toISOString()
+        return dateString
+    }
+
+    //16 giờ 59 phút
+    if (time.includes('giờ') && time.includes('phút') && components.length === 4) {
+        let date = moment().add(parseInt(components[0]), 'hour')
+        let dateString = moment(date).add(parseInt(components[2]), 'minute').toISOString()
+        return dateString
     }
 
     return ''

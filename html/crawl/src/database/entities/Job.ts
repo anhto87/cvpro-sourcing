@@ -23,6 +23,7 @@ export interface Job {
   jobType?: string;//not ok
   jobLocations?: string[];//not ok
   locations?: string[];
+  locationsEN?: string[];
   categories?: string[];//not ok // ["IT - Phần mềm", "Nhân sự", "IT-Phần cứng/Mạng"]
   skills?: string[];
   benefits?: any[];
@@ -32,6 +33,10 @@ export interface Job {
   publishedDate?: Date;//not ok
   expiredDate?: Date;
   onlineDate?: Date;
+  jobTitleSlug?: string;
+  publishedTimestamp?:number;
+  expiredTimestamp?: number,
+  onlineTimestamp?:number
 }
 
 export const JobSchema: Schema<Job> = new Schema<Job>({
@@ -49,6 +54,7 @@ export const JobSchema: Schema<Job> = new Schema<Job>({
   jobType: String,
   jobLocations: [String],
   locations: [String],
+  locationsEN: [String],
   categories: [String],
   skills: [String],
   benefits: [SchemaTypes.Mixed],
@@ -70,6 +76,10 @@ export const JobSchema: Schema<Job> = new Schema<Job>({
   expiredDate: Date,
   publishedDate: Date,
   onlineDate: Date,// thời gian lắm mới job => chắc là đẩy job lên top
+  jobTitleSlug:String,
+  publishedTimestamp:Number,
+  expiredTimestamp:Number,
+  onlineTimestamp:Number,
 });
 
 export async function saveJob(job: Job) {

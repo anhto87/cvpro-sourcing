@@ -58,10 +58,11 @@ const getJobs = (): CareerBuilderJob[] => {
             const jobTitle = titleEle.getAttribute('title') || '';
             const companyLogo = element.querySelector('div.image a img')?.getAttribute('src') || '';
             const company = companyEle.getAttribute('title') || '';
+            const onlineDate = element.querySelector('div.time time')?.textContent?.trim() || '';
             const link = titleEle.getAttribute('href') || '';
             const domain = document.domain;
             const locations = Array.from(locationEle).map(ele => ele.textContent?.trim() || '');
-            jobs.push({ jobId, jobTitle, companyLogo, company, link, domain, jobLocations: locations, locations })
+            jobs.push({ jobId, jobTitle, companyLogo, company, link, domain, jobLocations: locations, locations, onlineDate })
         } else {
             continue
         }
@@ -71,7 +72,6 @@ const getJobs = (): CareerBuilderJob[] => {
 
 const getJobDetail = (): CareerBuilderJob => {
     enum CareerBuilderConstant {
-        onlineDate = 'Ngày cập nhật',
         expiredDate = 'Hết hạn nộp',
         catagories = 'Ngành nghề',
         jobType = 'Hình thức',
@@ -101,7 +101,6 @@ const getJobDetail = (): CareerBuilderJob => {
         let queryElement = 'td.name p';
         let queryValue = 'td.content p';
         const jobInfoElement = Array.from(document.querySelectorAll('div.box-info div.table table tbody tr'));
-        const onlineDate = getInfoValue(CareerBuilderConstant.onlineDate, queryElement, queryValue, jobInfoElement) as string;
         const expiredDate = getInfoValue(CareerBuilderConstant.expiredDate, queryElement, queryValue, jobInfoElement) as string;
         const experience = getInfoValue(CareerBuilderConstant.experience, queryElement, queryValue, jobInfoElement) as string;
         const jobType = getInfoValue(CareerBuilderConstant.jobType, queryElement, queryValue, jobInfoElement) as string;
@@ -111,7 +110,7 @@ const getJobDetail = (): CareerBuilderJob => {
         const skills = Array.from(skillEles).map(ele => (ele.getAttribute('title') || '').trim());
         const benefitsEles = document.querySelectorAll('div.detail-row.box-welfares ul li');
         const benefits = Array.from(benefitsEles).map(ele => (ele.textContent || '').trim());
-        return { jobType, jobDescription, categories, experience, expiredDate, onlineDate, skills, benefits, salary };
+        return { jobType, jobDescription, categories, experience, expiredDate, skills, benefits, salary };
     }
 
     //case template html 2
@@ -136,7 +135,6 @@ const getJobDetail = (): CareerBuilderJob => {
             }
 
         }
-        const onlineDate = getInfoValue(CareerBuilderConstant.onlineDate, queryElement, queryValue, jobInfoElement) as string;
         const expiredDate = getInfoValue(CareerBuilderConstant.expiredDate, queryElement, queryValue, jobInfoElement) as string;
         const experience = getInfoValue(CareerBuilderConstant.experience, queryElement, queryValue, jobInfoElement) as string;
         const jobType = getInfoValue(CareerBuilderConstant.jobType, queryElement, queryValue, jobInfoElement) as string;
@@ -146,7 +144,7 @@ const getJobDetail = (): CareerBuilderJob => {
         const skills = Array.from(skillEles).map(ele => (ele.getAttribute('title') || '').trim());
         const benefitsEles = document.querySelectorAll('.job-detail-content div.detail-row ul.welfare-list li');
         const benefits = Array.from(benefitsEles).map(ele => (ele.textContent || '').trim());
-        return { jobDescription, categories, experience, jobType, salary, expiredDate, benefits, onlineDate, skills }
+        return { jobDescription, categories, experience, jobType, salary, expiredDate, benefits, skills }
     }
 
     return {};

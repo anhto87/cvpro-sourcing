@@ -1,8 +1,8 @@
 import axios, { Method } from 'axios';
-import puppeteer from 'puppeteer';
 import { URLConstants } from './constants/constant';
 import { Job, saveJob } from '../database/entities';
 import Logger from './Log';
+import {createPuppeteerBrowser, slugify} from "./helper";
 
 interface APIRequestConfig {
     method: string;
@@ -54,6 +54,7 @@ interface VietNamWorkJob {
     classifiedConfidenceSkills?: any[];
     classifiedSkills?: any[];
     objectID?: number;
+    jobTitleSlug?:string;
 }
 
 interface VietNamWorkResultItem {
@@ -94,6 +95,12 @@ const convertToJob = (job: VietNamWorkJob, domain: string): Job => {
     const skills = job.skills || [];
     const benefits = (job.benefits || []).map(ele => ele.benefitValue);
     const data = job;
+    const jobTitleSlug = job.alias;
+    const link = `https://www.vietnamworks.com/${jobTitleSlug}-${jobId}-jv`
+    const locationsEN = locations.map(ele => slugify(ele, ' '));
+    const expiredTimestamp = job.expiredDate;
+    const publishedTimestamp = job.publishedDate;
+    const onlineTimestamp = job.onlineDate;
 
     return {
         jobId,
@@ -117,7 +124,12 @@ const convertToJob = (job: VietNamWorkJob, domain: string): Job => {
         benefits,
         data,
         domain,
-        link: ''
+        link,
+        jobTitleSlug,
+        locationsEN,
+        expiredTimestamp,
+        onlineTimestamp,
+        publishedTimestamp
     }
 }
 
@@ -147,7 +159,7 @@ const getBody = (obj: string, page: number = 0) => {
 const apiGetDataConfig = async (url: string, pageNumber: number = 0): Promise<APIRequestConfig | null> => {
     try {
         Logger.info(new Date().toISOString(), "Vietnamwork start load apiGetDataConfig")
-        const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
+        const browser = await createPuppeteerBrowser();
         const page = await browser.newPage();
         let apiRequest: APIRequestConfig | null = null;
 
@@ -160,9 +172,9 @@ const apiGetDataConfig = async (url: string, pageNumber: number = 0): Promise<AP
         page.on('requestfinished', async (request) => {
             const response = request.response();
             const requestPostData = request.postData();
-            const statuCode = response?.status() || 404;
+            const statusCode = response?.status() || 404;
 
-            if (requestPostData?.includes('indexName') && statuCode < 300) {
+            if (requestPostData?.includes('indexName') && statusCode < 300) {
                 const method = request.method();
                 const data = getBody(requestPostData!, pageNumber);
                 const url = request.url();

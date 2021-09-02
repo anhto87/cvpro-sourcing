@@ -4,7 +4,7 @@ import { List, Skeleton, Divider, Typography, Row, Col, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { timeAgo } from '../../../global/helpers';
 import { BsBookmark } from 'react-icons/bs';
-import { NoData } from './NoData';
+import { NoData } from '../../../components/NoData';
 const { Text, Paragraph, Link } = Typography;
 
 export const ListJobs = ({ items, isLoading, page, totalPage, totalJob, loadMore, limit, onPressLink }) => {

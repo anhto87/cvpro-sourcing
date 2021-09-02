@@ -2,7 +2,6 @@ import './home.css';
 import React, { useState } from 'react';
 import { useHistory } from "react-router-dom";
 import { Row, Button, Form, Layout, Typography } from 'antd';
-import { useTranslation } from 'react-i18next';
 import { useLocalStorage, useTotalJobs } from '../../global/hooks';
 import { getListJobURL, LogoName, StorageSearchRecents } from '../../global/helpers';
 import _ from 'lodash';

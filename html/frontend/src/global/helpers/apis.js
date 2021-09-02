@@ -3,7 +3,7 @@
  * 
  * 
  */
-import { fetchApi } from '../utils';
+import { fetchApi, fetchApiCustomURL } from '../utils';
 
 class API {
 
@@ -13,9 +13,23 @@ class API {
     }
 
     async getListJobs({ keyword, address, page = 1, jobType, xLast }) {
-        console.log(`ListJobs `, { keyword, address, page, jobType, xLast });
         let querys = `?filters=${keyword || ''}&job_type=${jobType || ''}&x_last=${xLast || ''}&sort_by=onlineDate:desc&page=${page}&locations=${address || ''}`;
         return await fetchApi(`/jobs/query${querys}`, { method: "GET" });
+    }
+
+    async getJobDetail({ jobId }) {
+        return await fetchApi(`/jobs/${jobId}`, { method: "POST" });
+    }
+
+    async getJobsSuggest() {
+        return await fetchApiCustomURL(`https://nhanlucvietnam.net/api/jobs`, {
+            method: "GET",
+            mode: 'no-cors',
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Content-Type": "application/json",
+            },
+        });
     }
 }
 

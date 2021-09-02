@@ -5,8 +5,7 @@
  * 
  */
 
-import { LOADDING, LOAD_COMPLETE, UPDATEFORM, UPDATE_PAGE, RESET } from "./actions";
-import { FilterTimes, FilterJobTypes } from '../../global/helpers';
+import { LOADDING, LOAD_COMPLETE, UPDATEFORM, UPDATE_PAGE, RESET, JOB_SUGGEST } from "./actions";
 
 const initForm = { keyword: null, address: null, time: null, jobType: null, page: null };
 export const initialValues = {
@@ -16,7 +15,8 @@ export const initialValues = {
     totalJobs: 0,
     totalPage: 0,
     limit: 0,
-    isFilter: false
+    isFilter: false,
+    jobsSuggest: []
 };
 
 export const reducer = (state, action) => {
@@ -65,6 +65,11 @@ export const reducer = (state, action) => {
         case RESET:
             return {
                 ...initialValues
+            }
+        case JOB_SUGGEST:
+            return {
+                ...state,
+                jobsSuggest: payload
             }
         default:
             return state

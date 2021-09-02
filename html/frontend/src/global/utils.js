@@ -39,7 +39,9 @@ export const axiosRequest = async (url, props) => {
     }
 };
 
-export const fetchApi = async (url, props) => {
+const getURl = url => `${process.env.REACT_APP_API_GATEWAY_URI}${url}`;
+
+const requestApi = async (url, props) => {
     const {
         method = 'GET',
         timeout = 15000,
@@ -61,8 +63,6 @@ export const fetchApi = async (url, props) => {
         const id = setTimeout(() => {
             controller.abort();
         }, timeout);
-
-        const baseUrl = `${process.env.REACT_APP_API_GATEWAY_URI}${url}`;
 
         let optionsInit = {
             method: method,
@@ -96,7 +96,7 @@ export const fetchApi = async (url, props) => {
             console.log(optionsInit);
         }
 
-        const response = await fetch(baseUrl, optionsInit);
+        const response = await fetch(url, optionsInit);
 
         clearTimeout(id);
         if (response.ok) {
@@ -107,6 +107,15 @@ export const fetchApi = async (url, props) => {
     } catch (e) {
         console.log(e);
     }
+};
+
+export const fetchApi = async (url, props) => {
+    let fullUrl = getURl(url);
+    return await requestApi(fullUrl, props);
+};
+
+export const fetchApiCustomURL = async (url, props) => {
+    return await requestApi(url, props);
 };
 
 /**

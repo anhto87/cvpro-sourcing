@@ -1,11 +1,14 @@
 import './JobDetail.css';
-import React, { useEffect, useState } from 'react';
-import { useLocation, useHistory } from "react-router-dom";
-import { Row, Col, Button, Form, Layout, Typography } from 'antd';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useLocation, useHistory, useParams } from "react-router-dom";
+import { Row, Col, Button, Form, Layout, Typography, Skeleton } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { timeAgo } from '../../global/helpers/date';
 import { SearchForm } from '../../components/SearchForm';
 import { getListJobURL, LogoName } from '../../global/helpers';
+import apis from '../../global/helpers/apis';
+import { NoData } from '../../components/NoData';
+import { JobDescription } from './JobDescription';
 const { Title, Text } = Typography;
 const { Content, Footer } = Layout;
 
@@ -13,8 +16,10 @@ export const JobDetail = (props) => {
     const { t } = useTranslation();
     const location = useLocation();
     const history = useHistory();
+    const params = useParams();
     const [form] = Form.useForm();
     const [job, setJob] = useState(null);
+    const [loading, setLoading] = useState(true);
     const [keyword, setKeyword] = useState('');
     const [address, setAddress] = useState('');
 
@@ -22,9 +27,31 @@ export const JobDetail = (props) => {
         const jobItem = location.state;
         if (jobItem) {
             setJob(jobItem);
+            setLoading(false);
+        } else {
+            fetchData();
         }
-        document.title = jobItem?.jobTitle;
     }, [])
+
+    useEffect(() => {
+        if (job) {
+            document.title = job?.jobTitle;
+        }
+    }, [job])
+
+    const fetchData = useCallback(async () => {
+        const jobId = params?.id;
+        if (jobId) {
+            let res = await apis.getJobDetail({ jobId });
+            const status = res?.success === "OK"
+            if (status) {
+                setJob(res.data);
+            } else {
+                setJob(null);
+            }
+            setLoading(false)
+        }
+    }, [params?.id])
 
     const onPressGoHome = () => {
         history.push('/')
@@ -76,6 +103,12 @@ export const JobDetail = (props) => {
         )
     }
 
+    const NotFound = () => {
+        return <Row justify="center">
+            <NoData />
+        </Row>
+    }
+
     return (
         <>
             <Row justify='space-between' align='middle' className="header">
@@ -94,55 +127,57 @@ export const JobDetail = (props) => {
                             onChangeKeyword={e => setKeyword(e)}
                             onPressSubmit={onPressSubmit}
                         />
-                        <Row wrap={false}>
-                            <Col style={{ paddingTop: 20 }}>
-                                <Title level={4}>{job?.jobTitle || ''}</Title>
-                                <div className="title-info fontW600">
-                                    <Text>{job?.company}</Text>
-                                    <Text className="fontW400">{locations.length > 0 ? ` - ${locations.join(",")}` : null}</Text>
-                                </div>
-                                <div>
-                                    <Text className="listed-date">{`${timeStr} ${t('home.from')} ${job?.domain}`}</Text>
-                                </div>
-                                <Row>
-                                    <Col span={12}>
-                                        {jobLocations.length > 0 && <JobInfoTextELement title={t('home.workLocation')} arr={jobLocations} />}
-                                    </Col>
-                                    <Col span={12}>
-                                        {experience.length > 0 && <JobInfoTextELement title={t('home.experience')} arr={[experience]} />}
-                                    </Col>
-                                </Row>
+                        {loading ? <Skeleton /> : job && !loading ? (
+                            <Row wrap={false}>
+                                <Col style={{ paddingTop: 20 }}>
+                                    <Title level={4}>{job?.jobTitle || ''}</Title>
+                                    <div className="title-info fontW600">
+                                        <Text>{job?.company}</Text>
+                                        <Text className="fontW400">{locations.length > 0 ? ` - ${locations.join(",")}` : null}</Text>
+                                    </div>
+                                    <div>
+                                        <Text className="listed-date">{`${timeStr} ${t('home.from')} ${job?.domain}`}</Text>
+                                    </div>
+                                    <Row>
+                                        <Col span={12}>
+                                            {jobLocations.length > 0 && <JobInfoTextELement title={t('home.workLocation')} arr={jobLocations} />}
+                                        </Col>
+                                        <Col span={12}>
+                                            {experience.length > 0 && <JobInfoTextELement title={t('home.experience')} arr={[experience]} />}
+                                        </Col>
+                                    </Row>
 
-                                <Row>
-                                    <Col span={12}>
-                                        {categories.length > 0 && <JobInfoButtonELement title={t('home.career')} arr={categories} />}
-                                    </Col>
-                                    <Col span={12}>
-                                        {skills.length > 0 && <JobInfoButtonELement title={t('home.skill')} arr={skills} />}
-                                    </Col>
-                                </Row>
-                                <Row>
-                                    <Col span={12}>
-                                        {jobType.length > 0 && <JobInfoTextELement title={t('home.jobType')} arr={[jobType]} />}
-                                    </Col>
-                                    <Col span={12}>
-                                        {salary.length > 0 && <JobInfoTextELement title={t('home.salary')} arr={[salary]} />}
-                                    </Col>
-                                </Row>
-                                <div style={{ marginTop: 20 }} dangerouslySetInnerHTML={{ __html: job?.jobDescription }} />
-                                <div style={{ padding: 30 }}>
-                                    <Button
-                                        style={{ width: '100%' }}
-                                        onClick={() => window.open(job?.link, '_blank').focus()}
-                                        type="primary"
-                                        htmlType="submit"
-                                        shape="round"
-                                        className="submit-button">
-                                        {t('home.apply')}
-                                    </Button>
-                                </div>
-                            </Col>
-                        </Row>
+                                    <Row>
+                                        <Col span={12}>
+                                            {categories.length > 0 && <JobInfoButtonELement title={t('home.career')} arr={categories} />}
+                                        </Col>
+                                        <Col span={12}>
+                                            {skills.length > 0 && <JobInfoButtonELement title={t('home.skill')} arr={skills} />}
+                                        </Col>
+                                    </Row>
+                                    <Row>
+                                        <Col span={12}>
+                                            {jobType.length > 0 && <JobInfoTextELement title={t('home.jobType')} arr={[jobType]} />}
+                                        </Col>
+                                        <Col span={12}>
+                                            {salary.length > 0 && <JobInfoTextELement title={t('home.salary')} arr={[salary]} />}
+                                        </Col>
+                                    </Row>
+                                    <JobDescription job={job} />
+                                    <div style={{ padding: 30 }}>
+                                        <Button
+                                            style={{ width: '100%' }}
+                                            onClick={() => window.open(job?.link, '_blank').focus()}
+                                            type="primary"
+                                            htmlType="submit"
+                                            shape="round"
+                                            className="submit-button">
+                                            {t('home.apply')}
+                                        </Button>
+                                    </div>
+                                </Col>
+                            </Row>
+                        ) : <NotFound />}
                     </div>
                 </Row>
             </Content>

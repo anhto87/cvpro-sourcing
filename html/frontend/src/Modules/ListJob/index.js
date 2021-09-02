@@ -12,7 +12,7 @@ import { ListJobs } from './components/ListJobs';
 import apis from '../../global/helpers/apis';
 import { Filter } from './components/Filter';
 import { reducer, initialValues } from './reducer';
-import { loadCompletedAction, loading, resetAction, updateFormValues, updatePageAction } from './actions';
+import { jobsSuggestAction, loadCompletedAction, loading, resetAction, updateFormValues, updatePageAction } from './actions';
 import { SearchForm } from '../../components/SearchForm';
 const { Content, Footer } = Layout;
 const INPUT_HEIGHT = 45;
@@ -29,8 +29,9 @@ export const ListJob = () => {
     const updateForm = (payload) => dispatch(updateFormValues(payload));
     const updatePage = (payload) => dispatch(updatePageAction(payload));
     const loadCompleted = (payload) => dispatch(loadCompletedAction(payload));
-    const showLoading = (isLoading) => dispatch(loading(isLoading));
+    const fetchData = (isLoading) => dispatch(loading(isLoading));
     const reset = (isLoading) => dispatch(resetAction(isLoading));
+    const setJobSuggest = (jobs) => dispatch(jobsSuggestAction(jobs));
 
     useEffect(() => {
         const keyword = query.get('keyword') || '';
@@ -40,12 +41,17 @@ export const ListJob = () => {
         const page = parseInt(query.get('page')) || 1;
         form.setFieldsValue({ keyword, address });
         updateForm({ keyword, address, time, jobType, page });
+
+        apis.getJobsSuggest().then(response => {
+            const jobs = Array.isArray(response?.data) ? response?.data : [];
+            setJobSuggest(jobs)
+        })
     }, [])
 
     useEffect(() => {
         const form = state?.form;
         if (form && (typeof form?.keyword === 'string' || typeof form?.address === 'string')) {
-            showLoading(true);
+            fetchData(true);
         }
     }, [state?.form?.page, state?.form?.time, state?.form?.jobType]);
 
@@ -67,7 +73,7 @@ export const ListJob = () => {
         if (page != 1) {
             updatePage(1);
         } else {
-            showLoading(true);
+            fetchData(true);
         }
     }
 
@@ -138,6 +144,8 @@ export const ListJob = () => {
         history.push({ pathname, state: item });
     }
 
+    const suggests = Array.isArray(state?.jobsSuggest) ? state.jobsSuggest : [];
+
     return (
         <>
             <Row justify='space-between' align='middle' className="header">
@@ -179,6 +187,15 @@ export const ListJob = () => {
                             </Col>
                         </Row>
                     </div>
+                    {suggests.length > 0 && (
+                        <div style={{ width: 350, paddingTop: 150, paddingLeft: 40, paddingRight: 20 }}>
+                            <div className="border borderRadius5 widthP100">
+                                <Row style={{ height: 1000 }}>
+                                    {suggests.length}
+                                </Row>
+                            </div>
+                        </div>
+                    )}
                 </Row>
             </Content>
             <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>

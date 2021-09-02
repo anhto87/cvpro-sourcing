@@ -70,3 +70,7 @@ button.linka a:hover {
     font-size: 15px;
     margin-top: 10px;
 }
+
+.break-line {
+    white-space: pre-line;
+}

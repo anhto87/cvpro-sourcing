@@ -70,7 +70,7 @@ services:
         networks:
             - god
         ports:
-            - 27117:27017
+            - 27017:27017
         environment:
             - MONGODB_SYSTEM_LOG_VERBOSITY=3
             - MONGODB_ENABLE_JOURNAL=true
@@ -87,5 +87,6 @@ services:
         networks:
           - god
         volumes:
-          - ./databases/puppeteer:/puppeteer              
-
+          - ./databases/puppeteer:/puppeteer    
+          - ../html/crawl/:/crawl
+        command: tail -f /dev/null              

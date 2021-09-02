@@ -4,3 +4,5 @@
 keys/*
 **/logs/*
 **/.idea/*
+**/.DS_Store
+**/*.log

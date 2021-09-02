@@ -147,7 +147,7 @@ const getBody = (obj: string, page: number = 0) => {
 const apiGetDataConfig = async (url: string, pageNumber: number = 0): Promise<APIRequestConfig | null> => {
     try {
         Logger.info(new Date().toISOString(), "Vietnamwork start load apiGetDataConfig")
-        const browser = await puppeteer.launch();
+        const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
         const page = await browser.newPage();
         let apiRequest: APIRequestConfig | null = null;
 

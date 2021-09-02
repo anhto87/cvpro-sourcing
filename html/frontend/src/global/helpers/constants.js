@@ -3,7 +3,7 @@
  * 
  * 
  */
-export const LogoName = "JobStreet";
+export const LogoName = "CVPRO";
 export const StorageSearchRecents = "SearchRecents";
 export const LIMIT = 10;
 

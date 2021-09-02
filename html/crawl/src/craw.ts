@@ -6,7 +6,7 @@ import { CronJob } from 'cron';
 import './database';
 
 async function scrapeWithSchedule() {
-    const newBrowser = await puppeteer.launch({ headless: true, defaultViewport: null });
+    const newBrowser = await puppeteer.launch({ headless: true, defaultViewport: null, args: ['--no-sandbox', '--disable-setuid-sandbox']});
     let job1 = Promise.all([
         Crawl.all('https://www.vlance.vn/viec-lam-freelance', newBrowser, 5), //10job/page
         Crawl.all('https://careerbuilder.vn/viec-lam/tat-ca-viec-lam-vi.html', newBrowser, 1), //50job/page

@@ -3,7 +3,7 @@ import { Prefix } from './constants/constant';
 import { Job, saveJob } from '../database/entities';
 import Logger from './Log';
 import { CareerBuilderJob } from './careerbuilder';
-import { convertTimeAgoToDate, convertToJob, scrollToBottom, setHeader } from './helper';
+import { closePage, convertTimeAgoToDate, convertToJob, scrollToBottom, setHeader } from './helper';
 import config from '../database/config';
 
 
@@ -92,16 +92,16 @@ const getJobDetail = (): CareerBuilderJob[] => {
 async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppeteer.Page, maxItem: number) {
     try {
         const jobs = await page.evaluate(getJobs);
+        await closePage(page);
         Logger.info(`url: ${url} start scrape ${jobs.length}`)
         const items: Job[] = [];
         const maxJobs = jobs.length >= maxItem ? maxItem : jobs.length;
-        console.log(`ahihi: ${maxJobs} ${jobs.length}`);
         for (let index = 0; index < maxJobs; index++) {
             const job = jobs[index];
             const pageDetail = await browser.newPage();
             await pageDetail.goto(job.link!, { waitUntil: 'networkidle0', timeout: config.timeout });
             const jobDetails = await pageDetail.evaluate(getJobDetail);
-            await pageDetail.close();
+            await closePage(pageDetail)
             for (const jobDetail of jobDetails) {
                 const onlineDate = convertTimeAgoToDate(job.onlineDate || '');
                 const item = convertToJob({

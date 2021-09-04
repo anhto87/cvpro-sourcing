@@ -22,6 +22,11 @@ export const createPuppeteerBrowser = async () => {
     })
 }
 
+export const closePage = async (page: puppeteer.Page) => {
+    await page.goto('about:blank');
+    await page.close();
+}
+
 export async function setHeader(page: puppeteer.Page) {
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.109 Safari/537.36');
 }
@@ -140,7 +145,7 @@ export const convertTimeAgoToDate = (time: string) => {
     if (time.includes('giờ') && time.includes('phút') && components.length === 5) {
         let date = moment().add(-parseInt(components[0]), 'hour');
         let dateString = moment(date).add(-parseInt(components[2]), 'minute').toISOString();
-        return  dateString;
+        return dateString;
     }
 
     let number = parseInt(components[0]);

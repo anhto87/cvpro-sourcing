@@ -5,7 +5,7 @@ import config from '../database/config';
 import { Job, saveJob } from '../database/entities';
 import Logger from './Log';
 import { CareerBuilderJob } from './careerbuilder';
-import { convertTimeAgoToDate, convertToJob, scrollToBottom, setHeader } from './helper';
+import { closePage, convertTimeAgoToDate, convertToJob, scrollToBottom, setHeader } from './helper';
 
 
 const getNextPage = async (page: puppeteer.Page) => {
@@ -108,6 +108,7 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
             return document.body.outerHTML;
         })
         const jobs = await page.evaluate(getJobs);
+        await closePage(page);
         const items: Job[] = [];
         for (const job of jobs) {
             const pageDetail = await browser.newPage();
@@ -115,7 +116,7 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
             await pageDetail.goto(job.link!, { waitUntil: 'networkidle0', timeout: config.timeout });
             await pageDetail.waitForSelector('img.lazyload');
             const jobDetail = await pageDetail.evaluate(getJobDetail);
-            await pageDetail.close();
+            await closePage(pageDetail)
             const item = convertToJob({
                 ...job,
                 ...jobDetail,

@@ -2,7 +2,7 @@ import puppeteer from 'puppeteer';
 import config from '../database/config';
 import { Job, saveJob } from '../database/entities';
 import Logger from './Log';
-import { convertToJob, scrollToBottom } from './helper';
+import { closePage, convertToJob, scrollToBottom } from './helper';
 
 export type CareerBuilderJob = {
     jobId?: string;
@@ -156,12 +156,13 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
         await page.goto(url, { waitUntil: 'networkidle0', timeout: 0 });
         await scrollToBottom(page);
         const jobs = await page.evaluate(getJobs);
+        await closePage(page);
         const items: Job[] = [];
         for (const job of jobs) {
             const pageDetail = await browser.newPage();
             await pageDetail.goto(job.link!, { waitUntil: 'networkidle0', timeout: config.timeout });
             const jobDetail = await pageDetail.evaluate(getJobDetail);
-            await pageDetail.close();
+            await closePage(pageDetail);
             const item = convertToJob({ ...job, ...jobDetail })
             await saveJob(item);
             const number = (Math.floor(Math.random() * (maxDelayTime - minDelayTime)) + minDelayTime) * 1000;
@@ -171,7 +172,8 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
         Logger.info(`Load data page: ${url} count: ${items.length}`);
         return items;
     } catch (err) {
-        throw new Error(err);
+        Logger.error(err);
+        return []
     }
 
 }

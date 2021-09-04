@@ -2,7 +2,7 @@ import axios, { Method } from 'axios';
 import { URLConstants } from './constants/constant';
 import { Job, saveJob } from '../database/entities';
 import Logger from './Log';
-import {createPuppeteerBrowser, slugify} from "./helper";
+import {closePage, createPuppeteerBrowser, slugify} from "./helper";
 
 interface APIRequestConfig {
     method: string;
@@ -184,6 +184,7 @@ const apiGetDataConfig = async (url: string, pageNumber: number = 0): Promise<AP
         });
 
         await page.goto(url, { waitUntil: 'networkidle0' });
+        await closePage(page);
         await browser.close();
         Logger.info("Vietnamwork load apiGetDataConfig done")
         return apiRequest;

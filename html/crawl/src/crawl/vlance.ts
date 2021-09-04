@@ -3,7 +3,7 @@ import { Prefix } from './constants/constant';
 import { Job, saveJob } from '../database/entities';
 import Logger from './Log';
 import { CareerBuilderJob } from './careerbuilder';
-import {convertExpireDate, convertTimeAgoToDate, convertToJob, scrollToBottom} from './helper';
+import {closePage, convertExpireDate, convertTimeAgoToDate, convertToJob, scrollToBottom} from './helper';
 import md5 from 'md5';
 import config from '../database/config';
 
@@ -108,7 +108,6 @@ const getJobDetail = (): CareerBuilderJob => {
 
 async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppeteer.Page) {
     try {
-        Logger.info(`getJobInPage 1`);
         const cookies = [{
             'name': 'PHPSESSID',
             'value': 'smaeuiu6e9n01e2otcr43vah00',
@@ -117,16 +116,15 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
         }]
         await page.setCookie(...cookies);
         await page.goto(url, { waitUntil: 'networkidle0', timeout: 0 });
-        Logger.info(`getJobInPage 2`);
         await scrollToBottom(page);
         const jobs = await page.evaluate(getJobs);
-        Logger.info(`getJobInPage 3: ${jobs.length}`);
+        await closePage(page);
         const items: Job[] = [];
         for (const job of jobs) {
             const pageDetail = await browser.newPage();
             await pageDetail.goto(job.link!, { waitUntil: 'networkidle0', timeout: config.timeout });
             const jobDetail = await pageDetail.evaluate(getJobDetail);
-            await pageDetail.close();
+            await closePage(pageDetail);
             const publishedDate = convertTimeAgoToDate(jobDetail.publishedDate || '');
             const expiredDate = convertExpireDate(job.expiredDate || '');
             const item = convertToJob({

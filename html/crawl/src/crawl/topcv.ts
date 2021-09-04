@@ -4,7 +4,7 @@ import config from '../database/config';
 import { Job, saveJob } from '../database/entities';
 import Logger from './Log';
 import { CareerBuilderJob } from './careerbuilder';
-import { convertTimeAgoToDate, convertToJob, scrollToBottom } from './helper';
+import { closePage, convertTimeAgoToDate, convertToJob, scrollToBottom } from './helper';
 
 
 const getNextPage = async (page: puppeteer.Page) => {
@@ -168,12 +168,13 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
         await page.goto(url, { waitUntil: 'networkidle0', timeout: 0 });
         await scrollToBottom(page);
         const jobs = await page.evaluate(getJobs);
+        await closePage(page);
         const items: Job[] = [];
         for (const job of jobs) {
             const pageDetail = await browser.newPage();
             await pageDetail.goto(job.link!, { waitUntil: 'networkidle0', timeout: config.timeout });
             const jobDetail = await pageDetail.evaluate(getJobDetail);
-            await pageDetail.close();
+            await closePage(pageDetail);
             const item = convertToJob({
                 ...job,
                 ...jobDetail,

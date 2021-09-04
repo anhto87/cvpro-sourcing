@@ -1,7 +1,7 @@
 import puppeteer, { Browser } from 'puppeteer';
 import { URLConstants } from './constants/constant';
 import Logger from './Log';
-import {createPuppeteerBrowser, setHeader} from './helper';
+import {closePage, createPuppeteerBrowser, setHeader} from './helper';
 import { JobsGo, CareerLink, TimViecNhanh, ITViec, Vieclam24h, TopCv, CareerBuilder, ViecTotNhat, TopDev, vlance, yBox } from './index'
 
 async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppeteer.Page, maxItem: number = 100) {
@@ -71,7 +71,7 @@ async function page(url: string, browser?: puppeteer.Browser) {
         const page = await newBrowser.newPage();
         await setHeader(page);
         let items = await getJobInPage(url, newBrowser, page);
-        await page.close();
+        await closePage(page);
         if (!browser) {
             await newBrowser.close();
         }
@@ -87,12 +87,12 @@ async function page(url: string, browser?: puppeteer.Browser) {
 async function all(url: string, browser?: puppeteer.Browser, maxPage: number = 1000) {
     try {
         const newBrowser = browser || await createPuppeteerBrowser();
-        const page = await newBrowser.newPage();
-        await setHeader(page);
         let nextPage: string | null | undefined = url;
         let curentPage = 1;
         while (nextPage) {
             Logger.info(`Load data next page: ${nextPage}`);
+            const page = await newBrowser.newPage();
+            await setHeader(page);
             await getJobInPage(nextPage, newBrowser, page);
             Logger.info(`Load getJobInPage done`);
             if (curentPage < maxPage) {

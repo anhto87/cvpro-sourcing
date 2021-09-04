@@ -31,7 +31,7 @@ async function scrapeWithSchedule() {
     newBrowser.close();
 }
 
-const job = new CronJob('0 50 */1 * * *', function () {
+const job = new CronJob('0 52 */1 * * *', function () {
     Logger.info('Start Job scrapeWithSchedule')
     scrapeWithSchedule().then((r) => console.log("scrapeWithSchedule done"));
 }, null, true, 'Asia/Ho_Chi_Minh');

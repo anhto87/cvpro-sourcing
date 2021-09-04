@@ -1,7 +1,7 @@
 import puppeteer, { Browser } from 'puppeteer';
 import { URLConstants } from './constants/constant';
 import Logger from './Log';
-import {closePage, createPuppeteerBrowser, setHeader} from './helper';
+import { closePage, createPuppeteerBrowser, setHeader } from './helper';
 import { JobsGo, CareerLink, TimViecNhanh, ITViec, Vieclam24h, TopCv, CareerBuilder, ViecTotNhat, TopDev, vlance, yBox } from './index'
 
 async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppeteer.Page, maxItem: number = 100) {
@@ -117,10 +117,22 @@ async function all(url: string, browser?: puppeteer.Browser, maxPage: number = 1
 async function pageInfinite(url: string, browser?: puppeteer.Browser, maxItem: number = 20) {
     try {
         const newBrowser = browser || await createPuppeteerBrowser();
-        const page = await newBrowser.newPage();
+        const [page] = await newBrowser.pages();
         await setHeader(page);
         let totalJob: number = 0;
         Logger.info(`Load data next page: ${url}`);
+
+        if (url.includes('ybox.vn')) {
+            await page.setRequestInterception(true);
+            page.on('request', request => {
+                const requestURl = request.url()
+                if (requestURl.includes('api.ybox.vn/graphq') && !requestURl.includes('SearchPosts')) {
+                    request.abort();
+                } else {
+                    request.continue();
+                }
+            })
+        }
         await page.goto(url, { waitUntil: 'networkidle0', timeout: 0 });
         Logger.info(`Loadmore: ${url}`);
         while (totalJob < maxItem) {

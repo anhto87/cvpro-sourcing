@@ -147,9 +147,11 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
         const items: Job[] = [];
         for (const job of jobs) {
             const pageDetail = await browser.newPage();
+            Logger.info('Jobgo is new Page')
             await pageDetail.goto(job.link!, { waitUntil: 'networkidle0', timeout: config.timeout });
             const jobDetail = await pageDetail.evaluate(getJobDetail);
             await closePage(pageDetail);
+            Logger.info('Jobgo is new Page closed')
             const item = convertToJob({ ...job, ...jobDetail, jobId: Prefix.jobsGo + job.jobId });
             await saveJob(item);
             const number = (Math.floor(Math.random() * (config.maxDelayTime - config.minDelayTime)) + config.minDelayTime) * 1000;

@@ -93,19 +93,19 @@ export async function saveJob(job: Job) {
     }
     let record = await Jobs.findOneAndUpdate({ jobId: cleanJob.jobId }, { ...cleanJob }, { new: true, upsert: true });
     if (record) {
-      Logger.info(`saveJob successful ${record?.jobId} ${record.link}`);
+      // Logger.info(`saveJob successful ${record?.jobId} ${record.link}`);
       return true
     } else {
       let create = await Jobs.create(cleanJob);
       if (create) {
-        Logger.info(`saveJob successful ${create?.jobId} ${create.link}`);
+        // Logger.info(`saveJob successful ${create?.jobId} ${create.link}`);
         return true
       }
     }
-    Logger.info(`saveJob faild${cleanJob?.jobId} ${cleanJob.link} `);
+    // Logger.info(`saveJob faild${cleanJob?.jobId} ${cleanJob.link} `);
     return false;
   } catch (e) {
-    Logger.error(`saveJob faild ${job.link} ${job.companyLogo} ${e}`);
+    // Logger.error(`saveJob faild ${job.link} ${job.companyLogo} ${e}`);
     return false;
   }
 }

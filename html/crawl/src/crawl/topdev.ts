@@ -93,9 +93,11 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
         for (let index = 0; index < maxIndex; index++) {
             const job = jobs[index];
             const pageDetail = await browser.newPage();
+            Logger.info('Topdev is new Page')
             await pageDetail.goto(job.link!, { waitUntil: 'networkidle0', timeout: config.timeout });
             const jobDetail = await pageDetail.evaluate(getJobDetail);
             await closePage(pageDetail);
+            Logger.info('Topdev is new Page closed')
             const item = convertToJob({
                 ...job,
                 ...jobDetail,

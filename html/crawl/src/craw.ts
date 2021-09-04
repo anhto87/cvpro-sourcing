@@ -17,11 +17,11 @@ async function scrapeWithSchedule() {
         // Crawl.all('https://itviec.com/it-jobs', newBrowser, 2),//20job
     ])
     let job2 = Promise.all([
-        Crawl.all('https://timviecnhanh.com/vieclam/timkiem?', newBrowser, 2),//20job/page
+        // Crawl.all('https://timviecnhanh.com/vieclam/timkiem?', newBrowser, 2),//20job/page
         // Crawl.all('https://www.careerlink.vn/vieclam/list', newBrowser, 1),//50jobs/page
         // Crawl.all('https://viectotnhat.com/viec-lam/tim-kiem', newBrowser, 2),//20job/page
         // Crawl.pageInfinite('https://topdev.vn/viec-lam-it', newBrowser, 50),
-        // Crawl.pageInfinite('https://ybox.vn/tuyen-dung-viec-lam-tk-c1?keyword=', newBrowser, 50),
+        Crawl.pageInfinite('https://ybox.vn/tuyen-dung-viec-lam-tk-c1?keyword=', newBrowser, 50),
         // VietNamWorkWithPage('https://www.vietnamworks.com/tim-viec-lam/tat-ca-viec-lam?filtered=true', 1)
     ])
 

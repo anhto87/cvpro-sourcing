@@ -112,7 +112,7 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
         for (const job of jobs) {
             const pageDetail = await browser.newPage();
             await setHeader(pageDetail);
-            await pageDetail.goto(job.link!, { waitUntil: 'networkidle0', timeout: 0 });
+            await pageDetail.goto(job.link!, { waitUntil: 'networkidle0', timeout: config.timeout });
             await pageDetail.waitForSelector('img.lazyload');
             const jobDetail = await pageDetail.evaluate(getJobDetail);
             await pageDetail.close();

@@ -1,6 +1,6 @@
 export default {
-    // uri: "mongodb://root:88888888@cvpro_mongodb_1:27017/cvpro?authSource=admin",
-    uri: "mongodb://localhost:27017/cv_dev",
+    uri: "mongodb://root:88888888@cvpro_mongodb_1:27017/cvpro?authSource=admin",
     maxDelayTime: 50,
-    minDelayTime: 20
+    minDelayTime: 20,
+    timeout: 60000,
 }

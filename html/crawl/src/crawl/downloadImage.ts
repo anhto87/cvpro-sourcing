@@ -4,11 +4,20 @@ import Axios from 'axios';
 import md5 from 'md5';
 import Logger from './Log';
 
+function createImagesFolder() {
+    const path = Path.resolve(__dirname, 'images')
+    if (!Fs.existsSync(path)) {
+        Fs.mkdirSync(path)
+    }
+}
+
 export async function downloadImage(url: string) {
     try {
         const fileName = `${md5(url)}.jpg`;
         const path = Path.resolve(__dirname, 'images', fileName)
 
+        createImagesFolder()
+        
         if (Fs.existsSync(path)) {
             return fileName;
         }

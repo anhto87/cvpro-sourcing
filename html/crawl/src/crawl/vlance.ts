@@ -108,6 +108,7 @@ const getJobDetail = (): CareerBuilderJob => {
 
 async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppeteer.Page) {
     try {
+        Logger.info(`getJobInPage 1`);
         const cookies = [{
             'name': 'PHPSESSID',
             'value': 'smaeuiu6e9n01e2otcr43vah00',
@@ -116,8 +117,10 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
         }]
         await page.setCookie(...cookies);
         await page.goto(url, { waitUntil: 'networkidle0', timeout: 0 });
+        Logger.info(`getJobInPage 2`);
         await scrollToBottom(page);
         const jobs = await page.evaluate(getJobs);
+        Logger.info(`getJobInPage 3: ${jobs.length}`);
         const items: Job[] = [];
         for (const job of jobs) {
             const pageDetail = await browser.newPage();
@@ -143,7 +146,6 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
     } catch (err) {
         Logger.error(err);
         return [];
-        //        throw new Error(err);
     }
 
 }

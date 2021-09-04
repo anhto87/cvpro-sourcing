@@ -94,11 +94,14 @@ async function all(url: string, browser?: puppeteer.Browser, maxPage: number = 1
         while (nextPage) {
             Logger.info(`Load data next page: ${nextPage}`);
             await getJobInPage(nextPage, newBrowser, page);
+            Logger.info(`Load getJobInPage done`);
             if (curentPage < maxPage) {
                 nextPage = await getNextPage(page, url);
                 curentPage += 1;
+                Logger.info(`Load set nextPage ${nextPage}`);
             } else {
                 nextPage = null;
+                Logger.info(`Load set nextPage ${nextPage}`);
             }
         }
         if (!browser) {
@@ -106,7 +109,8 @@ async function all(url: string, browser?: puppeteer.Browser, maxPage: number = 1
         }
         return true
     } catch (err) {
-        throw new Error(err);
+        Logger.error(JSON.stringify(err))
+        return false;
     }
 }
 
@@ -140,7 +144,8 @@ async function pageInfinite(url: string, browser?: puppeteer.Browser, maxItem: n
         }
         return items
     } catch (err) {
-        throw new Error(err);
+        Logger.error(JSON.stringify(err))
+        return [];
     }
 }
 

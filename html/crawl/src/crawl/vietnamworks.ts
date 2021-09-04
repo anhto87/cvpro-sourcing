@@ -152,7 +152,7 @@ const getBody = (obj: string, page: number = 0) => {
         return params
     } catch (error) {
         Logger.error(`Vietnamwork func createNewBody api ${error}`);
-        throw new Error(error);
+        return null;
     }
 }
 
@@ -189,7 +189,7 @@ const apiGetDataConfig = async (url: string, pageNumber: number = 0): Promise<AP
         return apiRequest;
     } catch (err) {
         Logger.error(`Vietnamwork load apiGetDataConfig error ${err}`);
-        throw new Error(err);
+        return null;
     }
 }
 
@@ -214,13 +214,13 @@ export async function VietNamWorkWithPage(url: string, page: number = 0): Promis
                 await saveJob(convertToJob(job, URLConstants.vietnamWork))
             }
             Logger.info("VietNamWorkWithPage crawl data done");
-            return
+            return true;
         }
         Logger.info("VietNamWorkWithPage crawl data fail");
-        return
+        return false;
     } catch (error) {
         Logger.error(error);
-        throw new Error(error);
+        return false;
     }
 }
 
@@ -245,12 +245,12 @@ export async function VietNamWorkAll(url: string) {
                 Logger.info(`VietNamWorkAll loaded url: ${config.url} page: ${index} jobs: ${newJobs.length}`);
             }
             Logger.info("VietNamWorkAll crawl data done");
-            return
+            return true;
         }
         Logger.error("VietNamWorkAll crawl data fail");
     } catch (error) {
         Logger.error(error);
         Logger.error("Vietnamwork crawl data fail ", error);
-        throw new Error(error);
+        return false;
     }
 }

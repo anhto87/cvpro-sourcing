@@ -121,7 +121,6 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
     } catch (err) {
         Logger.error(err);
         return [];
-        //        throw new Error(err);
     }
 
 }

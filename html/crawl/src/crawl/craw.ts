@@ -106,7 +106,8 @@ async function all(url: string, browser?: puppeteer.Browser, maxPage: number = 1
         }
         return true
     } catch (err) {
-        throw new Error(err);
+        Logger.error(JSON.stringify(err))
+        return false;
     }
 }
 
@@ -140,7 +141,8 @@ async function pageInfinite(url: string, browser?: puppeteer.Browser, maxItem: n
         }
         return items
     } catch (err) {
-        throw new Error(err);
+        Logger.error(JSON.stringify(err))
+        return [];
     }
 }
 

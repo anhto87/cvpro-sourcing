@@ -21,7 +21,8 @@ async function scrapeWithSchedule() {
         Crawl.all('https://www.careerlink.vn/vieclam/list', newBrowser, 1),//50jobs/page
         Crawl.all('https://viectotnhat.com/viec-lam/tim-kiem', newBrowser, 2),//20job/page
         Crawl.pageInfinite('https://topdev.vn/viec-lam-it', newBrowser, 50),
-        Crawl.pageInfinite('https://ybox.vn/tuyen-dung-viec-lam-tk-c1?keyword=', newBrowser, 50)
+        Crawl.pageInfinite('https://ybox.vn/tuyen-dung-viec-lam-tk-c1?keyword=', newBrowser, 50),
+        VietNamWorkWithPage('https://www.vietnamworks.com/tim-viec-lam/tat-ca-viec-lam?filtered=true', 1)
     ])
 
     Promise.all([job1, job2])
@@ -32,7 +33,7 @@ async function scrapeWithSchedule() {
         Logger.error(`Craw data done ${e}`);
     })
 }
-const job = new CronJob('0 14 */1 * * *', function () {
+const job = new CronJob('0 15 */1 * * *', function () {
     Logger.info('Start Job scrapeWithSchedule')
     scrapeWithSchedule().then((r) => console.log(r));
 }, null, true, 'Asia/Ho_Chi_Minh');

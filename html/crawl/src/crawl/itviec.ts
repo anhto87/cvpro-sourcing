@@ -5,7 +5,7 @@ import config from '../database/config';
 import { Job, saveJob } from '../database/entities';
 import Logger from './Log';
 import { CareerBuilderJob } from './careerbuilder';
-import { closePage, convertTimeAgoToDate, convertToJob, scrollToBottom, setHeader } from './helper';
+import { closePage, convertTimeAgoToDate, convertToJob, delay, scrollToBottom, setHeader } from './helper';
 
 
 const getNextPage = async (page: puppeteer.Page) => {
@@ -112,13 +112,11 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
         const items: Job[] = [];
         for (const job of jobs) {
             const pageDetail = await browser.newPage();
-            Logger.info('itviec is new Page')
             await setHeader(pageDetail);
             await pageDetail.goto(job.link!, { waitUntil: 'networkidle0', timeout: config.timeout });
             await pageDetail.waitForSelector('img.lazyload');
             const jobDetail = await pageDetail.evaluate(getJobDetail);
             await closePage(pageDetail)
-            Logger.info('itviec is new Page close')
             const item = convertToJob({
                 ...job,
                 ...jobDetail,
@@ -127,7 +125,7 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
             });
             await saveJob(item);
             const number = (Math.floor(Math.random() * (config.maxDelayTime - config.minDelayTime)) + config.minDelayTime) * 1000;
-            await pageDetail.waitForTimeout(number)
+            await delay(number)
             items.push(item);
         }
         Logger.info(`Load data page: ${url} count: ${items.length}`);

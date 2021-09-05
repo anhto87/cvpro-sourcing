@@ -1,7 +1,7 @@
 import puppeteer, { Browser } from 'puppeteer';
 import { URLConstants } from './constants/constant';
 import Logger from './Log';
-import { closePage, createPuppeteerBrowser, setHeader } from './helper';
+import { closePage, createPuppeteerBrowser, delay, setHeader } from './helper';
 import { JobsGo, CareerLink, TimViecNhanh, ITViec, Vieclam24h, TopCv, CareerBuilder, ViecTotNhat, TopDev, vlance, yBox } from './index'
 
 async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppeteer.Page, maxItem: number = 100) {
@@ -86,6 +86,8 @@ async function page(url: string, browser?: puppeteer.Browser) {
 
 async function all(url: string, browser?: puppeteer.Browser, maxPage: number = 1000) {
     try {
+        const number = (Math.floor(Math.random() * 50) + 40) * 1000;
+        await delay(number);
         const newBrowser = browser || await createPuppeteerBrowser();
         let nextPage: string | null | undefined = url;
         let curentPage = 1;
@@ -117,7 +119,7 @@ async function all(url: string, browser?: puppeteer.Browser, maxPage: number = 1
 async function pageInfinite(url: string, browser?: puppeteer.Browser, maxItem: number = 20) {
     try {
         const newBrowser = browser || await createPuppeteerBrowser();
-        const [page] = await newBrowser.pages();
+        const page = await newBrowser.newPage();
         await setHeader(page);
         let totalJob: number = 0;
         Logger.info(`Load data next page: ${url}`);
@@ -138,11 +140,7 @@ async function pageInfinite(url: string, browser?: puppeteer.Browser, maxItem: n
         while (totalJob < maxItem) {
             let total = await getTotalItems(page, url);
             Logger.info(`Loadmore: ${url} totalItems: ${total}`);
-            if (total == totalJob) {
-                totalJob = maxItem;
-            } else {
-                totalJob = total ? total : maxItem;
-            }
+            totalJob = total || maxItem;
             Logger.info(`Loadmore: ${url} totalItems: ${total} currentTotal: ${totalJob} max: ${maxItem}`);
             if (totalJob < maxItem) {
                 await page.evaluate('window.scrollTo(0, document.body.scrollHeight)');

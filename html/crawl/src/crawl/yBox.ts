@@ -3,7 +3,7 @@ import { Prefix } from './constants/constant';
 import { Job, saveJob } from '../database/entities';
 import Logger from './Log';
 import { CareerBuilderJob } from './careerbuilder';
-import { closePage, convertTimeAgoToDate, convertToJob, scrollToBottom, setHeader } from './helper';
+import { closePage, convertTimeAgoToDate, convertToJob, delay, scrollToBottom, setHeader } from './helper';
 import config from '../database/config';
 
 
@@ -82,6 +82,7 @@ const getJobDetail = (): CareerBuilderJob[] => {
             let locations = Array.from(document.querySelector('div span img[alt="Địa điểm"]')?.parentElement?.querySelectorAll('span') || []).map(ele => ele.textContent?.trim() || '');
             let jobType = Array.from(document.querySelector('div span img[alt="Tính chất công việc"]')?.parentElement?.querySelectorAll('span') || []).reduce((value1, value2) => value1 + (value2.textContent || ''), '').trim();
             let experience = Array.from(document.querySelector('div span img[alt="Kinh nghiệm"]')?.parentElement?.querySelectorAll('span') || []).reduce((value1, value2) => value1 + (value2.textContent || ''), '').trim();
+            locations = locations.map(ele => ele.replace('; ', ''));
             jobs.push({ jobId, jobTitle, jobDescription, salary, locations, jobLocations: locations, jobType, experience });
         }
         return jobs;
@@ -95,17 +96,17 @@ const spapePageDetail = async (url: string, browser: puppeteer.Browser) => {
         if (url.includes('ybox.vn')) {
             await pageDetail.setJavaScriptEnabled(false);
         }
-        Logger.info('Ybox is new Page')
         await pageDetail.goto(url, { waitUntil: 'networkidle0', timeout: config.timeout });
         const jobDetails = await pageDetail.evaluate(getJobDetail);
         await closePage(pageDetail)
-        Logger.info('Ybox is new Page closed')
         return jobDetails;
     } catch (err) {
         Logger.error(err);
         return null;
     }
 }
+
+
 
 async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppeteer.Page, maxItem: number) {
     try {
@@ -131,7 +132,7 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
                 }
             }
             const number = (Math.floor(Math.random() * (config.maxDelayTime - config.minDelayTime)) + config.minDelayTime) * 1000;
-            await page.waitForTimeout(number)
+            await delay(number);
         }
         Logger.info(`Load data page: ${url} count: ${items.length}`);
         return items;

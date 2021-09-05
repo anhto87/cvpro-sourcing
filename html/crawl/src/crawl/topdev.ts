@@ -4,7 +4,7 @@ import config from '../database/config';
 import { Job, saveJob } from '../database/entities';
 import Logger from './Log';
 import { CareerBuilderJob } from './careerbuilder';
-import { closePage, convertTimeAgoToDate, convertToJob, scrollToBottom, setHeader } from './helper';
+import { closePage, convertTimeAgoToDate, convertToJob, delay, scrollToBottom, setHeader } from './helper';
 
 
 const getNextPage = async (page: puppeteer.Page) => null;
@@ -84,6 +84,24 @@ const getJobDetail = (): CareerBuilderJob => {
     return {};
 }
 
+const spapePageDetail = async (url: string, browser: puppeteer.Browser) => {
+    const pageDetail = await browser.newPage();
+    try {
+        if (url.includes('ybox.vn')) {
+            await pageDetail.setJavaScriptEnabled(false);
+        }
+        await pageDetail.goto(url, { waitUntil: 'networkidle0', timeout: config.timeout });
+        const jobDetails = await pageDetail.evaluate(getJobDetail);
+        await closePage(pageDetail)
+        return jobDetails;
+    } catch (err) {
+        Logger.error(err);
+        await closePage(pageDetail)
+        return null;
+    }
+}
+
+
 async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppeteer.Page, maxItem: number) {
     try {
         const jobs = await page.evaluate(getJobs);
@@ -92,12 +110,7 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
         const maxIndex = jobs.length >= maxItem ? maxItem : jobs.length;
         for (let index = 0; index < maxIndex; index++) {
             const job = jobs[index];
-            const pageDetail = await browser.newPage();
-            Logger.info('Topdev is new Page')
-            await pageDetail.goto(job.link!, { waitUntil: 'networkidle0', timeout: config.timeout });
-            const jobDetail = await pageDetail.evaluate(getJobDetail);
-            await closePage(pageDetail);
-            Logger.info('Topdev is new Page closed')
+            const jobDetail = await spapePageDetail(job.link!, browser);
             const item = convertToJob({
                 ...job,
                 ...jobDetail,
@@ -106,7 +119,7 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
             });
             await saveJob(item);
             const number = (Math.floor(Math.random() * (config.maxDelayTime - config.minDelayTime)) + config.minDelayTime) * 1000;
-            await pageDetail.waitForTimeout(number)
+            await delay(number)
             items.push(item);
         }
         Logger.info(`Load data page: ${url} count: ${items.length}`);

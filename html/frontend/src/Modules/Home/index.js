@@ -1,12 +1,13 @@
 import './home.css';
 import React, { useState } from 'react';
 import { useHistory } from "react-router-dom";
-import { Row, Button, Form, Layout, Typography } from 'antd';
+import { Row, Button, Form, Layout, Typography, Col } from 'antd';
 import { useLocalStorage, useTotalJobs } from '../../global/hooks';
 import { getListJobURL, LogoName, StorageSearchRecents } from '../../global/helpers';
 import _ from 'lodash';
 import { SearchRecentsTable } from './components/SearchRecentsTable';
 import { SearchForm } from '../../components/SearchForm';
+import { useEffect } from 'react/cjs/react.development';
 const { Content, Footer } = Layout;
 
 export const Home = () => {
@@ -16,6 +17,10 @@ export const Home = () => {
     const history = useHistory();
     const totalJob = useTotalJobs();
     const [recents, setSearchRecents] = useLocalStorage(StorageSearchRecents, []);
+
+    useEffect(() => {
+        document.title = LogoName
+    }, [])
 
     const onPressSubmit = () => {
         if (keyword.length > 0 || address.length > 0) {
@@ -60,32 +65,35 @@ export const Home = () => {
     return (
         <>
             <Content>
-                <Row justify='center' align='top' style={{ marginTop: 180 }}>
-                    <div className="content">
-                        <Row justify='start' className="logo-container">
-                            <Typography.Link style={{ color: 'black' }} onClick={onPressGoHome}>{LogoName}</Typography.Link>
-                        </Row>
-                        <SearchForm
-                            form={form}
-                            keyword={keyword}
-                            address={address}
-                            onChangeKeyword={e => setKeyword(e)}
-                            onChangeAddress={e => setAddress(e)}
-                            onPressSubmit={onPressSubmit}
-                        />
-                        <TotalJobWaiting display={true} total={totalJob} />
-                        <SearchRecentsTable
-                            display={true}
-                            items={recents}
-                            onPressItem={(item) => {
-                                const recentKeyword = item?.keyword || '';
-                                const recentAddress = item?.address || '';
-                                gotoListJob({ keyword: recentKeyword, address: recentAddress })
-                            }}
-                            onPressDelete={() => setSearchRecents([])}
-                        />
-                    </div>
-                </Row>
+                <div className="content-container">
+                    <Row justify='center' align='top' style={{ marginTop: 180 }}>
+                        <Col span={18}>
+                            <Row justify='start' className="logo-container">
+                                <Typography.Link style={{ color: 'black' }} onClick={onPressGoHome}>{LogoName}</Typography.Link>
+                            </Row>
+                            <SearchForm
+                                fill
+                                form={form}
+                                keyword={keyword}
+                                address={address}
+                                onChangeKeyword={e => setKeyword(e)}
+                                onChangeAddress={e => setAddress(e)}
+                                onPressSubmit={onPressSubmit}
+                            />
+                            <TotalJobWaiting display={true} total={totalJob} />
+                            <SearchRecentsTable
+                                display={true}
+                                items={recents}
+                                onPressItem={(item) => {
+                                    const recentKeyword = item?.keyword || '';
+                                    const recentAddress = item?.address || '';
+                                    gotoListJob({ keyword: recentKeyword, address: recentAddress })
+                                }}
+                                onPressDelete={() => setSearchRecents([])}
+                            />
+                        </Col>
+                    </Row>
+                </div>
             </Content>
             <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>
         </>

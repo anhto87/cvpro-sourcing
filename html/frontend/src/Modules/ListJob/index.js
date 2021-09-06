@@ -64,6 +64,7 @@ export const ListJob = () => {
     useEffect(() => {
         const isLoading = state?.isLoading || false;
         if (isLoading) {
+            document.title = (state?.form?.keyword || '').length === 0 ? "Tất cả việc làm" : `Tuyển dụng, tìm việc làm ${state?.form?.keyword}`
             getListJobs().then(r => console.log(r));
         }
     }, [state?.isLoading])
@@ -125,7 +126,7 @@ export const ListJob = () => {
         const keyword = form.keyword || '';
         const address = form.address || '';
         const page = form?.page || 1;
-        const url = getListJobURL({ keyword, address, page, jobType, time:xLast})
+        const url = getListJobURL({ keyword, address, page, jobType, time: xLast })
         history.replace(url);
     }
 
@@ -150,41 +151,43 @@ export const ListJob = () => {
                 </Col>
             </Row>
             <Content>
-                <Row justify='center' align='top'>
-                    <div className="content">
-                        <SearchForm
-                            form={form}
-                            keyword={state?.form?.keyword || ''}
-                            address={state?.form?.address || ''}
-                            onChangeAddress={(e) => updateForm({ ...state.form, address: e })}
-                            onChangeKeyword={(e) => updateForm({ ...state.form, keyword: e })}
-                            onPressSubmit={onPressSubmit}
-                        />
-                        <Row wrap={false}>
-                            <Col flex="300px" className="left-content">
-                                <Filter
-                                    time={state?.form?.time || FilterTimes.all}
-                                    jobType={state?.form?.jobType || FilterJobTypes.all}
-                                    onChangeJobType={(jobType) => updateForm({ ...state.form, jobType })}
-                                    onChangeTime={(time) => updateForm({ ...state.form, time })}
-                                />
-                            </Col>
-                            <Col flex="auto">
-                                <ListJobs
-                                    isLoading={state?.isLoading || false}
-                                    items={state?.jobs}
-                                    page={state?.form?.page || 1}
-                                    totalJob={state?.totalJobs || 0}
-                                    totalPage={state?.totalPage || 0}
-                                    loadMore={loadMore}
-                                    limit={state?.limit || 0}
-                                    onPressLink={onPressLink}
-                                />
-                            </Col>
-                        </Row>
-                    </div>
-                    <ListJobSuggest items={suggests} onPressLink={onPressLink}/>
-                </Row>
+                <div className="content-container">
+                    <SearchForm
+                        form={form}
+                        keyword={state?.form?.keyword || ''}
+                        address={state?.form?.address || ''}
+                        onChangeAddress={(e) => updateForm({ ...state.form, address: e })}
+                        onChangeKeyword={(e) => updateForm({ ...state.form, keyword: e })}
+                        onPressSubmit={onPressSubmit}
+                    />
+                </div>
+                <div className="content-container">
+                    <Row justify='start' align='top' gutter={30} wrap={false}>
+                        <Col flex="21%">
+                            <Filter
+                                time={state?.form?.time || FilterTimes.all}
+                                jobType={state?.form?.jobType || FilterJobTypes.all}
+                                onChangeJobType={(jobType) => updateForm({ ...state.form, jobType })}
+                                onChangeTime={(time) => updateForm({ ...state.form, time })}
+                            />
+                        </Col>
+                        <Col flex="51.5%">
+                            <ListJobs
+                                isLoading={state?.isLoading || false}
+                                items={state?.jobs}
+                                page={state?.form?.page || 1}
+                                totalJob={state?.totalJobs || 0}
+                                totalPage={state?.totalPage || 0}
+                                loadMore={loadMore}
+                                limit={state?.limit || 0}
+                                onPressLink={onPressLink}
+                            />
+                        </Col>
+                        <Col flex="27.5%">
+                            <ListJobSuggest items={suggests} onPressLink={onPressLink} />
+                        </Col>
+                    </Row>
+                </div>
             </Content>
             <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>
         </>

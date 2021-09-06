@@ -76,7 +76,7 @@ export const Filter = ({ time, jobType, onChangeTime, onChangeJobType }) => {
     }
 
     return (
-        <div className="border borderRadius5">
+        <div className="border borderRadius5" style={{ marginTop: 41 }}>
             {/* <div style={{ paddingTop: 34 }}>
                 <Row gutter={16} className="pad20" style={{ paddingBottom: 0 }}>
                     <Col>
@@ -95,9 +95,11 @@ export const Filter = ({ time, jobType, onChangeTime, onChangeJobType }) => {
             {
                 items.map((ele, index) => {
                     return <div key={ele.title} style={{ paddingTop: index === 0 ? 24 : 0 }}>
-                        <Typography.Text strong style={{ paddingLeft: 20, paddingRight: 20 }}>
-                            {ele.title}
-                        </Typography.Text>
+                        <div style={{ paddingLeft: 20, paddingRight: 20 }}>
+                            <Typography.Text strong >
+                                {ele.title}
+                            </Typography.Text>
+                        </div>
                         <Row
                             gutter={[10, 10]}
                             style={{ paddingLeft: 20, paddingRight: 20, paddingTop: 15, paddingBottom: index !== (items.length - 1) ? 6 : 30 }}

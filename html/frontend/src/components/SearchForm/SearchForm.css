@@ -1,6 +1,6 @@
 .input-item {
-    width: 350px !important;
-    margin-right: 1.5em !important;
+    /* width: 350px !important; */
+    padding-right: 1.5em !important;
 }
 
 .input-item div.ant-form-item-label {
@@ -11,7 +11,7 @@
 
 .submit-button {
     height: 50px !important;
-    padding-left: 40px !important;
-    padding-right: 40px !important;
+    padding-left: auto !important;
+    padding-right: auto !important;
     color: white !important;
 }

@@ -21,7 +21,7 @@ export const SearchRecentsTable = ({ items, onPressDelete, onPressItem, display 
                                 className="link"
                                 style={{ color: 'black', padding: 0, margin: 0 }}
                                 danger
-                                onClick={() => onPressItem ? onPressItem(ele):null}>{ele?.keyword || ''}</Button>
+                                onClick={() => onPressItem ? onPressItem(ele) : null}>{ele?.keyword || ''}</Button>
                         </Row>
                     })
                 }

@@ -29,7 +29,7 @@ export const ListJobs = ({ items, isLoading, page, totalPage, totalJob, loadMore
             <List
                 className="marB50"
                 itemLayout="vertical"
-                size="large"
+                // size="large"
                 dataSource={isLoading ? emptys : items}
                 pagination={{
                     position: 'bottom',
@@ -60,7 +60,7 @@ export const ListJobs = ({ items, isLoading, page, totalPage, totalJob, loadMore
                                         </div>
                                         {Array.isArray(item?.skills) && item.skills.length > 0 &&
                                             <Row wrap={false} style={{ paddingRight: 50 }}>
-                                                <Paragraph ellipsis={{ rows: 1, expandable: false }} style={{ marginBottom: 0 }}>
+                                                <Paragraph style={{ marginBottom: 0 }}>
                                                     {t('home.skill')}
                                                     <Text>{item.skills.map(ele => ele.trim()).join(', ')}.</Text>
                                                 </Paragraph>
@@ -70,7 +70,7 @@ export const ListJobs = ({ items, isLoading, page, totalPage, totalJob, loadMore
                                             {addtions.length > 0 && <Text>{addtions.join(' - ')}</Text>}
                                         </Row>
                                     </Col>
-                                    <Col flex="60px">
+                                    <Col flex="none">
                                         <div className="font13" style={{ padding: '2px 10px', backgroundColor: '#2979c4', color: 'white', borderRadius: 2 }}>
                                             {t('home.new')}
                                         </div>

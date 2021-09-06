@@ -6,7 +6,7 @@ const { Paragraph, Link } = Typography;
 
 export const ListJobSuggest = ({ items, onPressLink }) => {
     return items.length > 0 ? (
-        <div style={{ width: 350, paddingTop: 150, paddingLeft: 40, paddingRight: 20 }}>
+        <div style={{ paddingTop: 41 }}>
             <div className='widthP100'>
                 {items.map((job, index) => {
                     return (
@@ -32,7 +32,7 @@ export const ListJobSuggest = ({ items, onPressLink }) => {
                 })}
             </div>
         </div>
-    ) : null;
+    ) : <div />;
 };
 
 

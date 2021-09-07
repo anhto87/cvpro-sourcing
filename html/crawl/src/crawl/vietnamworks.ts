@@ -206,7 +206,7 @@ async function getJobs(config: APIRequestConfig): Promise<VietNamWorkResultItem 
     return null
 }
 
-export async function VietNamWorkWithPage(url: string, page: number = 0): Promise<any> {
+export async function VietNamWorkWithPage(url: string, page: number = 0): Promise<boolean> {
     try {
         let config = await apiGetDataConfig(url, page);
         if (config) {

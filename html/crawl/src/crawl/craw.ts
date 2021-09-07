@@ -1,8 +1,9 @@
 import puppeteer, { Browser } from 'puppeteer';
 import { URLConstants } from './constants/constant';
 import Logger from './Log';
-import {closePage, createPuppeteerBrowser, setHeader} from './helper';
+import { closePage, createPuppeteerBrowser, delay, setHeader } from './helper';
 import { JobsGo, CareerLink, TimViecNhanh, ITViec, Vieclam24h, TopCv, CareerBuilder, ViecTotNhat, TopDev, vlance, yBox } from './index'
+import config from '../database/config';
 
 async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppeteer.Page, maxItem: number = 100) {
     if (url.includes(URLConstants.careerLink)) {
@@ -86,6 +87,8 @@ async function page(url: string, browser?: puppeteer.Browser) {
 
 async function all(url: string, browser?: puppeteer.Browser, maxPage: number = 1000) {
     try {
+        const number = (Math.floor(Math.random() * (config.maxDelayTime - config.minDelayTime)) + config.minDelayTime) * 1000;
+        await delay(number);
         const newBrowser = browser || await createPuppeteerBrowser();
         let nextPage: string | null | undefined = url;
         let curentPage = 1;
@@ -94,7 +97,6 @@ async function all(url: string, browser?: puppeteer.Browser, maxPage: number = 1
             const page = await newBrowser.newPage();
             await setHeader(page);
             await getJobInPage(nextPage, newBrowser, page);
-            Logger.info(`Load getJobInPage done`);
             if (curentPage < maxPage) {
                 nextPage = await getNextPage(page, url);
                 curentPage += 1;
@@ -107,9 +109,10 @@ async function all(url: string, browser?: puppeteer.Browser, maxPage: number = 1
         if (!browser) {
             await newBrowser.close();
         }
+        Logger.info(`Load getJobInPage done ${url}`);
         return true
     } catch (err) {
-        Logger.error(JSON.stringify(err))
+        Logger.error(`Error: ${url} ${JSON.stringify(err)}`)
         return false;
     }
 }
@@ -125,18 +128,22 @@ async function pageInfinite(url: string, browser?: puppeteer.Browser, maxItem: n
         Logger.info(`Loadmore: ${url}`);
         while (totalJob < maxItem) {
             let total = await getTotalItems(page, url);
-            Logger.info(`Loadmore: ${url} totalItems: ${total}`);
-            if (total == totalJob) {
-                totalJob = maxItem;
+            if (total) {
+                Logger.info(`Total: ${total}`)
+                if (total >= maxItem) {
+                    totalJob = maxItem
+                } else {
+                    await page.evaluate('window.scrollTo(0, document.body.scrollHeight)');
+                    await page.waitForTimeout(5000);
+                    total = await getTotalItems(page, url);
+                    Logger.info(`Total: ${total}`);
+                    totalJob = total ? total : maxItem;
+                }
             } else {
-                totalJob = total ? total : maxItem;
+                Logger.info(`Total: ${total} break`)
+                totalJob = maxItem;
             }
-            Logger.info(`Loadmore: ${url} totalItems: ${total} currentTotal: ${totalJob} max: ${maxItem}`);
-            if (totalJob < maxItem) {
-                await page.evaluate('window.scrollTo(0, document.body.scrollHeight)');
-                Logger.info(`Load data next page: ${url} awaiting in ${5}seconds ${url}`);
-                await page.waitForTimeout(5000);
-            }
+
         }
         let items = await getJobInPage(url, newBrowser, page, maxItem);
         if (!browser) {

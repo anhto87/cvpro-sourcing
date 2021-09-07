@@ -99,12 +99,15 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
         const maxJobs = jobs.length >= maxItem ? maxItem : jobs.length;
         for (let index = 0; index < maxJobs; index++) {
             const job = jobs[index];
+            Logger.info("Ybox create new Browser")
             const newBrowser = await createPuppeteerBrowser();
-            const pageDetail = await browser.newPage();
+            const pageDetail = await newBrowser.newPage();
             await pageDetail.goto(job.link!, { waitUntil: 'networkidle0', timeout: config.timeout });
             const jobDetails = await pageDetail.evaluate(getJobDetail);
             await closePage(pageDetail)
+            Logger.info("Ybox comming close new Browser")
             await newBrowser.close();
+            Logger.info("Ybox closed new Browser")
             for (const jobDetail of jobDetails) {
                 const onlineDate = convertTimeAgoToDate(job.onlineDate || '');
                 const item = convertToJob({

@@ -9,7 +9,9 @@
     "start": "nodemon ./build/server.js",
     "prod": "npm run build && npm run start",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "craw": "ts-node ./src/craw.ts"
+    "craw": "ts-node ./src/craw.ts",
+    "job1": "pm2 start ./build/src/jobs/job1.js --name \"craw_job1\"",
+    "job2": "pm2 start ./build/src/jobs/job2.js --name \"craw_job2\""
   },
   "dependencies": {
     "@types/axios": "^0.14.0",

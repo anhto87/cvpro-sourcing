@@ -25,7 +25,7 @@ async function scrapeWithSchedule() {
     //     VietNamWorkWithPage('https://www.vietnamworks.com/tim-viec-lam/tat-ca-viec-lam?filtered=true', 1)
     // ])
 
-    let res = await Crawl.pageInfinite('https://ybox.vn/tuyen-dung-viec-lam-tk-c1?keyword=', 50)
+    let res = await Crawl.pageInfinite('https://ybox.vn/tuyen-dung-viec-lam-tk-c1?keyword=', undefined, 50)
     Logger.info("Craw data done");
 }
 

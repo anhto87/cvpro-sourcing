@@ -4,7 +4,7 @@ import config from '../database/config';
 import { Job, saveJob } from '../database/entities';
 import Logger from './Log';
 import { CareerBuilderJob } from './careerbuilder';
-import { closePage, convertTimeAgoToDate, convertToJob, scrollToBottom } from './helper';
+import { closePage, convertTimeAgoToDate, convertToJob, delay, scrollToBottom } from './helper';
 
 
 const getNextPage = async (page: puppeteer.Page) => {
@@ -106,7 +106,7 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
             });
             await saveJob(item);
             const number = (Math.floor(Math.random() * (config.maxDelayTime - config.minDelayTime)) + config.minDelayTime) * 1000;
-            await pageDetail.waitForTimeout(number)
+            await delay(number)
             items.push(item);
         }
         Logger.info(`Load data page: ${url} count: ${items.length}`);

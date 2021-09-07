@@ -3,7 +3,7 @@ import { Prefix } from './constants/constant';
 import { Job, saveJob } from '../database/entities';
 import Logger from './Log';
 import { CareerBuilderJob } from './careerbuilder';
-import {closePage, convertExpireDate, convertTimeAgoToDate, convertToJob, scrollToBottom} from './helper';
+import {closePage, convertExpireDate, convertTimeAgoToDate, convertToJob, delay, scrollToBottom} from './helper';
 import md5 from 'md5';
 import config from '../database/config';
 
@@ -136,7 +136,7 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
             });
             await saveJob(item);
             const number = (Math.floor(Math.random() * (config.maxDelayTime - config.minDelayTime)) + config.minDelayTime) * 1000;
-            await pageDetail.waitForTimeout(number)
+            await delay(number);
             items.push(item);
         }
         Logger.info(`Load data page: ${url} count: ${items.length}`);

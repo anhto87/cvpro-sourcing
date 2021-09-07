@@ -2,6 +2,7 @@ import moment from 'moment';
 import puppeteer from 'puppeteer';
 import { Job } from '../database/entities';
 import { CareerBuilderJob } from './careerbuilder';
+import Logger from './Log';
 
 export const slugify = (str: string, separator = "-") => {
     return str
@@ -28,8 +29,10 @@ export const closePage = async (page: puppeteer.Page) => {
 }
 
 export function delay(delayInms: number) {
+    Logger.info(`Waiting me in ${delayInms}`)
     return new Promise(resolve => {
         setTimeout(() => {
+            Logger.info(`Thank for wait`)
             resolve(2);
         }, delayInms);
     });

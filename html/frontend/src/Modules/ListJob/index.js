@@ -1,5 +1,5 @@
 import './ListJob.css';
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import { useLocation, useHistory } from "react-router-dom";
 import { Row, Col, Form, Layout, Typography } from 'antd';
 import { useLocalStorage } from '../../global/hooks';
@@ -28,9 +28,9 @@ export const ListJob = () => {
     const [form] = Form.useForm();
     const location = useLocation();
     const history = useHistory();
+    const [locationKeys, setLocationKeys] = useState([])
     const [recents, setSearchRecents] = useLocalStorage(StorageSearchRecents, []);
     const [state, dispatch] = useReducer(reducer, initialValues, init);
-    const query = new URLSearchParams(location.search);
 
     const updateForm = (payload) => dispatch(updateFormValues(payload));
     const updatePage = (payload) => dispatch(updatePageAction(payload));
@@ -40,19 +40,45 @@ export const ListJob = () => {
     const setJobSuggest = (jobs) => dispatch(jobsSuggestAction(jobs));
 
     useEffect(() => {
+        initData(location.search);
+    }, [])
+
+    useEffect(() => {
+        return history.listen(location => {
+            if (history.action === 'PUSH') {
+                setLocationKeys([location.key])
+            }
+
+            if (history.action === 'POP') {
+                if (locationKeys[1] === location.key) {
+                    setLocationKeys(([_, ...keys]) => keys)
+                    console.log("Forward", history.location)
+                    initData(history.location.search);
+                } else {
+                    setLocationKeys((keys) => [location.key, ...keys])
+                    console.log("Back", history.location)
+                    initData(history.location.search);
+                }
+            }
+        })
+    }, [locationKeys,])
+
+    const initData = (search) => {
+        const query = new URLSearchParams(search);
         const keyword = query.get('keyword') || '';
         const address = query.get('address') || '';
         const time = parseInt(query.get('t')) || FilterTimes.all;
         const jobType = query.get('type') || FilterJobTypes.all;
         const page = parseInt(query.get('page')) || 1;
         form.setFieldsValue({ keyword, address });
-        updateForm({ keyword, address, time, jobType, page });
+        console.log({ keyword, address, time, jobType, page: page ? page : 1 })
+        updateForm({ keyword, address, time, jobType, page: page ? page : 1 });
 
         apis.getJobsSuggest().then(response => {
             const jobs = Array.isArray(response?.data) ? response?.data : [];
             setJobSuggest(jobs)
         })
-    }, [])
+    }
 
     useEffect(() => {
         const form = state?.form;
@@ -82,6 +108,7 @@ export const ListJob = () => {
         } else {
             fetchData(true);
         }
+        updateURL(1);
     }
 
     const addRecents = (value) => {
@@ -103,7 +130,6 @@ export const ListJob = () => {
         const address = form.address;
         const page = form?.page || 1;
 
-        updateURL();
         const res = await apis.getListJobs({ keyword, address, page, jobType, xLast })
         const totalJobs = res?.meta?.total || 0;
         const limit = res?.meta?.limit || 1;
@@ -116,18 +142,18 @@ export const ListJob = () => {
         if (newPage !== state?.form?.page) {
             updatePage(newPage);
             window.scrollTo({ top: 0, behavior: 'smooth' });
+            updateURL(newPage);
         }
     }
 
-    const updateURL = () => {
-        const form = state?.form;
-        const jobType = form.jobType;
-        const xLast = form.time;
-        const keyword = form.keyword || '';
-        const address = form.address || '';
-        const page = form?.page || 1;
+    const updateURL = (page, newForm) => {
+        const form = newForm ? newForm : state?.form;
+        const jobType = form?.jobType;
+        const xLast = form?.time;
+        const keyword = form?.keyword || '';
+        const address = form?.address || '';
         const url = getListJobURL({ keyword, address, page, jobType, time: xLast })
-        history.replace(url);
+        history.push(url);
     }
 
     const onPressGoHome = () => {
@@ -139,6 +165,11 @@ export const ListJob = () => {
     const onPressLink = (item) => {
         let pathname = getJobDetailURL(item)
         history.push({ pathname, state: item });
+    }
+
+    const onFilter = (filter) => {
+        updateForm(filter);
+        updateURL(filter?.form?.page || 1, filter);
     }
 
     const suggests = Array.isArray(state?.jobsSuggest) ? state.jobsSuggest : [];
@@ -167,8 +198,8 @@ export const ListJob = () => {
                             <Filter
                                 time={state?.form?.time || FilterTimes.all}
                                 jobType={state?.form?.jobType || FilterJobTypes.all}
-                                onChangeJobType={(jobType) => updateForm({ ...state.form, jobType })}
-                                onChangeTime={(time) => updateForm({ ...state.form, time })}
+                                onChangeJobType={(jobType) => onFilter({ ...state.form, jobType })}
+                                onChangeTime={(time) => onFilter({ ...state.form, time })}
                             />
                         </Col>
                         <Col flex="51.5%">

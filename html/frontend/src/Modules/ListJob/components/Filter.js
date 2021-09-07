@@ -111,7 +111,7 @@ export const Filter = ({ time, jobType, onChangeTime, onChangeJobType }) => {
                                     const isActive = isJobType ? jobType === option : time === option;
                                     const optionName = isJobType ? getTitleOptionFilterJobTypes(option) : getTitleOptionFilterTime(option);
                                     return (<Col key={option}>
-                                        <Button danger={isActive} shape="round" onClick={() => {
+                                        <Button className={isActive ? "btn-custom-focus" : "btn-custom"} danger={isActive} shape="round" onClick={(e) => {
                                             isJobType ? onChangeJobType(option) : onChangeTime(option);
                                         }}>
                                             {optionName}

@@ -63,9 +63,9 @@ export const Home = () => {
 
     return (
         <>
-            <Content>
+            <Content style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <div className="content-container">
-                    <Row justify='center' align='top' style={{ marginTop: 180 }}>
+                    <Row justify='center' align='middle'>
                         <Col span={18}>
                             <Row justify='start' className="logo-container">
                                 <Typography.Link style={{ color: 'black' }} onClick={onPressGoHome}>{LogoName}</Typography.Link>

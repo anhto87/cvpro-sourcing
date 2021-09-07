@@ -1,5 +1,5 @@
 import './home.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from "react-router-dom";
 import { Row, Button, Form, Layout, Typography, Col } from 'antd';
 import { useLocalStorage, useTotalJobs } from '../../global/hooks';
@@ -7,7 +7,6 @@ import { getListJobURL, LogoName, StorageSearchRecents } from '../../global/help
 import _ from 'lodash';
 import { SearchRecentsTable } from './components/SearchRecentsTable';
 import { SearchForm } from '../../components/SearchForm';
-import { useEffect } from 'react/cjs/react.development';
 const { Content, Footer } = Layout;
 
 export const Home = () => {

@@ -121,77 +121,80 @@ export const JobDetail = () => {
                 </Col>
             </Row>
             <Content>
-                <Row justify='center' align='top'>
-                    <div className='content' style={{ marginBottom: 100 }}>
-                        <SearchForm
-                            form={form}
-                            keyword={keyword}
-                            address={address}
-                            onChangeAddress={(e) => setAddress(e)}
-                            onChangeKeyword={e => setKeyword(e)}
-                            onPressSubmit={onPressSubmit}
-                        />
-                        {loading ? <Skeleton /> : job && !loading ? (
-                            <Row wrap={false}>
-                                <Col style={{ paddingTop: 20 }}>
-                                    <Title level={4}>{job?.jobTitle || ''}</Title>
-                                    <div className='title-info fontW600'>
-                                        <Text>{job?.company}</Text>
-                                        <Text
-                                            className='fontW400'>{locations.length > 0 ? ` - ${locations.join(',')}` : null}</Text>
-                                    </div>
-                                    <div>
-                                        <Text
-                                            className='listed-date'>{`${timeStr} ${t('home.from')} ${job?.domain}`}</Text>
-                                    </div>
-                                    <Row>
-                                        <Col span={experience.length > 0 ? 12 : 24}>
-                                            {jobLocations.length > 0 &&
-                                            <JobInfoTextElement title={t('home.workLocation')} arr={jobLocations} />}
-                                        </Col>
-                                        {experience.length > 0 &&
-                                        <Col span={12}>
-                                            <JobInfoTextElement title={t('home.experience')} arr={[experience]} />
-                                        </Col>}
-                                    </Row>
+                <div className="content-container">
+                    <Row justify='center' align='top'>
+                        <Col flex="942px">
+                            <SearchForm
+                                fill
+                                form={form}
+                                keyword={keyword}
+                                address={address}
+                                onChangeAddress={(e) => setAddress(e)}
+                                onChangeKeyword={e => setKeyword(e)}
+                                onPressSubmit={onPressSubmit}
+                            />
+                            {loading ? <Skeleton /> : job && !loading ? (
+                                <Row wrap={false}>
+                                    <Col style={{ paddingTop: 20 }}>
+                                        <Title level={4}>{job?.jobTitle || ''}</Title>
+                                        <div className='title-info fontW600'>
+                                            <Text>{job?.company}</Text>
+                                            <Text
+                                                className='fontW400'>{locations.length > 0 ? ` - ${locations.join(',')}` : null}</Text>
+                                        </div>
+                                        <div>
+                                            <Text
+                                                className='listed-date'>{`${timeStr} ${t('home.from')} ${job?.domain}`}</Text>
+                                        </div>
+                                        <Row>
+                                            <Col span={experience.length > 0 ? 12 : 24}>
+                                                {jobLocations.length > 0 &&
+                                                    <JobInfoTextElement title={t('home.workLocation')} arr={jobLocations} />}
+                                            </Col>
+                                            {experience.length > 0 &&
+                                                <Col span={12}>
+                                                    <JobInfoTextElement title={t('home.experience')} arr={[experience]} />
+                                                </Col>}
+                                        </Row>
 
-                                    <Row>
-                                        <Col span={12}>
-                                            {categories.length > 0 &&
-                                            <JobInfoButtonElement title={t('home.career')} arr={categories} />}
-                                        </Col>
-                                        <Col span={12}>
-                                            {skills.length > 0 &&
-                                            <JobInfoButtonElement title={t('home.skill')} arr={skills} />}
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col span={12}>
-                                            {jobType.length > 0 &&
-                                            <JobInfoTextElement title={t('home.jobType')} arr={[jobType]} />}
-                                        </Col>
-                                        <Col span={12}>
-                                            {salary.length > 0 &&
-                                            <JobInfoTextElement title={t('home.salary')} arr={[salary]} />}
-                                        </Col>
-                                    </Row>
-                                    <JobDescription job={job} />
-                                    <div style={{ padding: 30 }}>
-                                        <Button
-                                            style={{ width: '100%' }}
-                                            onClick={() => window.open(job?.link, '_blank').focus()}
-                                            type='primary'
-                                            htmlType='submit'
-                                            shape='round'
-                                            className='submit-button'>
-                                            {t('home.apply')}
-                                        </Button>
-                                    </div>
-                                </Col>
-                            </Row>
-                        ) : <NotFound />}
-                    </div>
-                </Row>
+                                        <Row>
+                                            <Col span={12}>
+                                                {categories.length > 0 &&
+                                                    <JobInfoButtonElement title={t('home.career')} arr={categories} />}
+                                            </Col>
+                                            <Col span={12}>
+                                                {skills.length > 0 &&
+                                                    <JobInfoButtonElement title={t('home.skill')} arr={skills} />}
+                                            </Col>
+                                        </Row>
+                                        <Row>
+                                            <Col span={12}>
+                                                {jobType.length > 0 &&
+                                                    <JobInfoTextElement title={t('home.jobType')} arr={[jobType]} />}
+                                            </Col>
+                                            <Col span={12}>
+                                                {salary.length > 0 &&
+                                                    <JobInfoTextElement title={t('home.salary')} arr={[salary]} />}
+                                            </Col>
+                                        </Row>
+                                        <JobDescription job={job} />
+                                        <div style={{ padding: 30 }}>
+                                            <Button
+                                                style={{ width: '100%' }}
+                                                onClick={() => window.open(job?.link, '_blank').focus()}
+                                                type='primary'
+                                                htmlType='submit'
+                                                shape='round'
+                                                className='submit-button'>
+                                                {t('home.apply')}
+                                            </Button>
+                                        </div>
+                                    </Col>
+                                </Row>
+                            ) : <NotFound />}
+                        </Col>
+                    </Row>
+                </div>
             </Content>
             <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>
         </>

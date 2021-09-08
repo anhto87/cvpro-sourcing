@@ -4,6 +4,7 @@ import Logger from './Log';
 import { closePage, createPuppeteerBrowser, delay, setHeader } from './helper';
 import { JobsGo, CareerLink, TimViecNhanh, ITViec, Vieclam24h, TopCv, CareerBuilder, ViecTotNhat, TopDev, vlance, yBox } from './index'
 import config from '../database/config';
+import { getConfigCraw } from '../database/entities';
 
 async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppeteer.Page, maxItem: number = 100) {
     if (url.includes(URLConstants.careerLink)) {
@@ -66,17 +67,23 @@ const getTotalItems = async (page: puppeteer.Page, url: string): Promise<number 
     return undefined;
 }
 
-async function page(url: string, browser?: puppeteer.Browser) {
+async function page(url: string, browser: puppeteer.Browser, domain: string) {
     try {
+        const configCraw = await getConfigCraw(domain);
+        let currentUrl = url
+        if (configCraw) {
+            currentUrl = configCraw.page || url;
+        }
         const newBrowser = browser || await createPuppeteerBrowser();
         const page = await newBrowser.newPage();
         await setHeader(page);
-        let items = await getJobInPage(url, newBrowser, page);
+        Logger.info(`Starting load ${currentUrl}`);
+        let items = await getJobInPage(currentUrl, newBrowser, page);
         await closePage(page);
         if (!browser) {
             await newBrowser.close();
         }
-        Logger.info(`Load data page: ${url} count: ${items.length}`);
+        Logger.info(`Load done: ${domain} count: ${items.length}`);
         return items;
     } catch (err) {
         Logger.error(err);

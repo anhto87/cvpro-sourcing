@@ -1,8 +1,9 @@
 import puppeteer from 'puppeteer';
 import config from '../database/config';
-import { Job, saveJob } from '../database/entities';
+import { Job, saveConfig, saveJob } from '../database/entities';
 import Logger from './Log';
 import { closePage, convertToJob, delay, scrollToBottom } from './helper';
+import { URLConstants, URLCraw } from './constants/constant';
 
 export type CareerBuilderJob = {
     jobId?: string;
@@ -170,6 +171,7 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
         await page.goto(url, { waitUntil: 'networkidle0', timeout: 0 });
         await scrollToBottom(page);
         const jobs = await page.evaluate(getJobs);
+        let nextPage = await getNextPage(page) || URLCraw.careerbuilder;
         await closePage(page);
         const items: Job[] = [];
         for (const job of jobs) {
@@ -180,7 +182,7 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
             await delay(number)
             items.push(item);
         }
-        Logger.info(`Load data page: ${url} count: ${items.length}`);
+        await saveConfig({ name: URLConstants.careerbuilder, page: nextPage });
         return items;
     } catch (err) {
         Logger.error(err);

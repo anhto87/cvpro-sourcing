@@ -4,23 +4,23 @@ import Logger from '../../crawl/Log';
 
 interface CrawConfig {
     name: string,
-    currentPage: number,
-    totalPage: number,
-    status: boolean
+    currentPage?: number,
+    totalPage?: number,
+    page?: string
 }
 
 export const ConfigSchema: Schema<CrawConfig> = new Schema<CrawConfig>({
     name: String,
     currentPage: Number,
     totalPage: Number,
-    status: Boolean
+    page: String
 }, { timestamps: true });
 
 export const ConfigModel: Model<CrawConfig> = model('craws', ConfigSchema);
 
 export const getConfigCraw = async (name: string): Promise<CrawConfig | null> => {
     try {
-        let config =await ConfigModel.findOne({ name, status: false }).sort({ created_at: -1 });
+        let config = await ConfigModel.findOne({ name })
         return config;
     } catch (error) {
         Logger.error(error);
@@ -34,8 +34,7 @@ export async function saveConfig(config: CrawConfig) {
         let record = await ConfigModel.findOne({
             name: config.name,
             totalPage: config.totalPage,
-            status: false
-        }).sort({ created_at: -1 });
+        })
         if (record) {
             await ConfigModel.updateOne({ _id: record._id }, newObj);
         } else {

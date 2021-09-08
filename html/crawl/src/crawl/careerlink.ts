@@ -1,27 +1,29 @@
 import puppeteer from 'puppeteer';
-import { Prefix } from './constants/constant';
+import { Prefix, URLConstants, URLCraw } from './constants/constant';
 import config from '../database/config';
-import { Job, saveJob } from '../database/entities';
+import { Job, saveConfig, saveJob } from '../database/entities';
 import Logger from './Log';
 import { CareerBuilderJob } from './careerbuilder';
 import { closePage, convertTimeAgoToDate, convertToJob, delay, scrollToBottom } from './helper';
 
 
 const getNextPage = async (page: puppeteer.Page) => {
-    function parseLink(link: string) {
-        if (link.includes('http')) { return link } else if (link.length == 0) { return '' }
-        return location.origin + link;
-    }
     const nextPageUrl = await page.evaluate(() => {
-        const pages = document.querySelectorAll('ul.pagination li a');
+        function parseLink(link: string) {
+            if (link.includes('http')) { return link } else if (link.length == 0) { return '' }
+            return location.origin + link;
+        }
+        const pages = document.querySelectorAll('ul.pagination li');
         const activePage = Array.from(pages).findIndex(ele => {
             return ele.className.includes('active');
         })
         if (activePage != -1 && pages.length > (activePage + 1)) {
-            return parseLink(pages[activePage + 1].getAttribute('href') || '');
+            const nextPage = pages[activePage + 1]
+            return parseLink(nextPage.querySelector('a')?.getAttribute('href') || '');
         }
         return null;
     })
+    Logger.info(`Next Page ${nextPageUrl}`)
     return nextPageUrl;
 }
 
@@ -103,6 +105,7 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
     try {
         await page.goto(url, { waitUntil: 'networkidle0', timeout: 0 });
         await scrollToBottom(page);
+        let nextPage = await getNextPage(page) || URLCraw.careerLink;
         const jobs = await page.evaluate(getJobs);
         await closePage(page);
         const items: Job[] = [];
@@ -122,7 +125,7 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
             await delay(number)
             items.push(item);
         }
-        Logger.info(`Load data page: ${url} count: ${items.length}`);
+        await saveConfig({ name: URLConstants.careerLink, page: nextPage });
         return items;
     } catch (err) {
         Logger.error(err);

@@ -5,7 +5,7 @@ import { CronJob } from 'cron';
 import './database';
 import { createPuppeteerBrowser } from "./crawl/helper";
 
-async function scrapeWithSchedule() {
+// async function scrapeWithSchedule() {
 
     // const newBrowser = await createPuppeteerBrowser();
     // let job1 = Promise.all([
@@ -25,11 +25,10 @@ async function scrapeWithSchedule() {
     //     VietNamWorkWithPage('https://www.vietnamworks.com/tim-viec-lam/tat-ca-viec-lam?filtered=true', 1)
     // ])
 
-    let res = await Crawl.pageInfinite('https://ybox.vn/tuyen-dung-viec-lam-tk-c1?keyword=', undefined, 50)
-    Logger.info("Craw data done");
-}
+//     Logger.info("Craw data done");
+// }
 
-scrapeWithSchedule();
+// scrapeWithSchedule();
 
 // const job = new CronJob('0 52 */1 * * *', function () {
 //     Logger.info('Start Job scrapeWithSchedule')

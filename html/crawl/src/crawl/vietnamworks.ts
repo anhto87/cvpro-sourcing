@@ -236,7 +236,7 @@ export async function VietNamWorkAll(url: string, delayMinus: number = 5) {
             for (const job of jobs) {
                 await saveJob(convertToJob(job, URLConstants.vietnamWork))
             }
-            await saveConfig({ name: URLConstants.vietnamWork, status: false, currentPage: page, totalPage: maxPage });
+            await saveConfig({ name: URLConstants.vietnamWork, currentPage: page, totalPage: maxPage });
 
             let nextPage = page + 1;
             await delay(delayMinus * 60 * 1000);
@@ -249,7 +249,7 @@ export async function VietNamWorkAll(url: string, delayMinus: number = 5) {
                 }
                 Logger.info(`VietNamWorkAll loaded page: ${index} jobs: ${newJobs.length}`);
                 await delay(delayMinus * 60 * 1000);
-                await saveConfig({ name: URLConstants.vietnamWork, status: index === (maxPage - 1), currentPage: index, totalPage: maxPage });
+                await saveConfig({ name: URLConstants.vietnamWork, currentPage: (index === (maxPage - 1) ? 0 : (index + 1)), totalPage: maxPage });
             }
             Logger.info("VietNamWorkAll crawl data done");
             return true;

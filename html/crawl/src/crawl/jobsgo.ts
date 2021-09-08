@@ -1,7 +1,7 @@
 import puppeteer from 'puppeteer';
-import { Prefix } from './constants/constant';
+import { Prefix, URLConstants, URLCraw } from './constants/constant';
 import config from '../database/config';
-import { Job, saveJob } from '../database/entities';
+import { Job, saveConfig, saveJob } from '../database/entities';
 import Logger from './Log';
 import { CareerBuilderJob } from './careerbuilder';
 import { closePage, convertToJob, delay, scrollToBottom } from './helper';
@@ -24,7 +24,7 @@ const getNextPage = async (page: puppeteer.Page) => {
         }
         return null;
     })
-
+    Logger.info(`Next Page ${nextPageUrl}`)
     return nextPageUrl;
 }
 
@@ -156,6 +156,7 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
     try {
         await page.goto(url, { waitUntil: 'networkidle0', timeout: 0 });
         await scrollToBottom(page);
+        let nextPage = await getNextPage(page) || URLCraw.jobsGo;
         const jobs = await page.evaluate(getJobs);
         await closePage(page);
         const items: Job[] = [];
@@ -170,7 +171,7 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
             await delay(number)
             items.push(item);
         }
-        Logger.info(`Load data page: ${url} count: ${items.length}`);
+        await saveConfig({ name: URLConstants.jobsGo, page: nextPage });
         return items;
     } catch (err) {
         Logger.error(err);

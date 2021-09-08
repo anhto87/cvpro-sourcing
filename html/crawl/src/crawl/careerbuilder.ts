@@ -42,6 +42,7 @@ const getNextPage = async (page: puppeteer.Page) => {
         }
         return null;
     })
+    Logger.info(`Next Page ${nextPageUrl}`)
     return nextPageUrl;
 }
 

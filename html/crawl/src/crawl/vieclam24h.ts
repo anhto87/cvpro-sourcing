@@ -164,6 +164,20 @@ const getJobDetail = (): CareerBuilderJob => {
     return {};
 }
 
+async function scapeDetail(link: string, browser: puppeteer.Browser) {
+    const pageDetail = await browser.newPage();
+    try {
+        await pageDetail.goto(link, { waitUntil: 'networkidle0', timeout: config.timeout });
+        const jobDetail = await pageDetail.evaluate(getJobDetail);
+        await closePage(pageDetail);
+        return jobDetail
+    } catch (error) {
+        Logger.error(`link: ${error}`)
+        await pageDetail.close()
+        return null
+    }
+}
+
 async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppeteer.Page) {
     try {
         await page.goto(url, { waitUntil: 'networkidle0', timeout: 0 });
@@ -172,11 +186,10 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
         await closePage(page);
         const items: Job[] = [];
         for (const job of jobs) {
-            const pageDetail = await browser.newPage();
-            await pageDetail.goto(job.link!, { waitUntil: 'networkidle0', timeout: config.timeout });
-            const jobDetail = await pageDetail.evaluate(getJobDetail);
-            await closePage(pageDetail);
-
+            const jobDetail = await scapeDetail(job.link!, browser);
+            if (!jobDetail) {
+                continue
+            }
             const item = convertToJob({
                 ...job,
                 ...jobDetail,

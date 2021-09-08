@@ -40,13 +40,13 @@ const getJobs = (): CareerBuilderJob[] => {
         const element = list[index];
         const titleEle = element.querySelector('h3.job-name a');
         const jobInfoEles = element.querySelectorAll('div');
-        const locationsEles = jobInfoEles.length > 2 ? jobInfoEles[2].querySelectorAll('span'):[];
+        const locationsEles = jobInfoEles.length > 2 ? jobInfoEles[2].querySelectorAll('span') : [];
 
         const link = parseLink(titleEle?.getAttribute('href') || '');
         const domain = document.domain;
         const jobTitle = titleEle?.getAttribute('title') || '';
         const company = element.querySelector('a.com-name')?.getAttribute('title') || '';
-        const locations: string[] = locationsEles.length > 0 ? (locationsEles[locationsEles.length - 1].getAttribute('title')?.split(',') || []).map(ele => ele.trim()):[];
+        const locations: string[] = locationsEles.length > 0 ? (locationsEles[locationsEles.length - 1].getAttribute('title')?.split(',') || []).map(ele => ele.trim()) : [];
         const expiredDate = jobInfoEles.length > 3 ? (jobInfoEles[3].textContent?.trim() || '') : '';
         const salary = jobInfoEles.length > 1 ? (jobInfoEles[1].textContent?.trim() || '') : '';
         let jobId = '';
@@ -80,7 +80,7 @@ const getJobDetail = (): CareerBuilderJob => {
 
         for (let index = 0; index < jobDetailContentEle.length; index++) {
             const element = jobDetailContentEle[index];
-            const nextElement = (index + 1) < jobDetailContentEle.length ? jobDetailContentEle[index + 1]:null;
+            const nextElement = (index + 1) < jobDetailContentEle.length ? jobDetailContentEle[index + 1] : null;
             switch (element?.textContent) {
                 case "Mô tả công việc":
                 case "Yêu cầu công việc":
@@ -115,6 +115,20 @@ const getJobDetail = (): CareerBuilderJob => {
     return {};
 }
 
+async function scapeDetail(link: string, browser: puppeteer.Browser) {
+    const pageDetail = await browser.newPage();
+    try {
+        await pageDetail.goto(link, { waitUntil: 'networkidle0', timeout: config.timeout });
+        const jobDetail = await pageDetail.evaluate(getJobDetail);
+        await closePage(pageDetail);
+        return jobDetail
+    } catch (error) {
+        Logger.error(`link: ${error}`)
+        await pageDetail.close()
+        return null
+    }
+}
+
 async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppeteer.Page) {
     try {
         await page.goto(url, { waitUntil: 'networkidle0', timeout: 0 });
@@ -123,10 +137,10 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
         await closePage(page);
         const items: Job[] = [];
         for (const job of jobs) {
-            const pageDetail = await browser.newPage();
-            await pageDetail.goto(job.link!, { waitUntil: 'networkidle0', timeout: config.timeout });
-            const jobDetail = await pageDetail.evaluate(getJobDetail);
-            await closePage(pageDetail);
+            const jobDetail = await scapeDetail(job.link!, browser);
+            if (!jobDetail) {
+                continue
+            }
             const item = convertToJob({
                 ...job,
                 ...jobDetail,

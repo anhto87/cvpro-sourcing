@@ -3,7 +3,7 @@ import { Prefix } from './constants/constant';
 import { Job, saveJob } from '../database/entities';
 import Logger from './Log';
 import { CareerBuilderJob } from './careerbuilder';
-import {closePage, convertExpireDate, convertTimeAgoToDate, convertToJob, delay, scrollToBottom} from './helper';
+import { closePage, convertExpireDate, convertTimeAgoToDate, convertToJob, delay, scrollToBottom } from './helper';
 import md5 from 'md5';
 import config from '../database/config';
 
@@ -106,6 +106,20 @@ const getJobDetail = (): CareerBuilderJob => {
     return { companyLogo, company, jobDescription, jobType, publishedDate, jobId };
 }
 
+async function scapeDetail(link: string, browser: puppeteer.Browser) {
+    const pageDetail = await browser.newPage();
+    try {
+        await pageDetail.goto(link, { waitUntil: 'networkidle0', timeout: config.timeout });
+        const jobDetail = await pageDetail.evaluate(getJobDetail);
+        await closePage(pageDetail);
+        return jobDetail
+    } catch (error) {
+        Logger.error(`link: ${error}`)
+        await pageDetail.close()
+        return null
+    }
+}
+
 async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppeteer.Page) {
     try {
         const cookies = [{
@@ -121,10 +135,10 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
         await closePage(page);
         const items: Job[] = [];
         for (const job of jobs) {
-            const pageDetail = await browser.newPage();
-            await pageDetail.goto(job.link!, { waitUntil: 'networkidle0', timeout: config.timeout });
-            const jobDetail = await pageDetail.evaluate(getJobDetail);
-            await closePage(pageDetail);
+            const jobDetail = await scapeDetail(job.link!, browser);
+            if (!jobDetail) {
+                continue
+            }
             const publishedDate = convertTimeAgoToDate(jobDetail.publishedDate || '');
             const expiredDate = convertExpireDate(job.expiredDate || '');
             const item = convertToJob({

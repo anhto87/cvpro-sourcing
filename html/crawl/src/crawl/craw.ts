@@ -85,9 +85,9 @@ async function page(url: string, browser?: puppeteer.Browser) {
     }
 }
 
-async function all(url: string, browser?: puppeteer.Browser, maxPage: number = 1000) {
+async function all(url: string, browser?: puppeteer.Browser, delayTime: number = 60, maxPage: number = 1000) {
     try {
-        const number = (Math.floor(Math.random() * (config.maxDelayTime - config.minDelayTime)) + config.minDelayTime) * 1000;
+        const number = delayTime * 1000;
         await delay(number);
         const newBrowser = browser || await createPuppeteerBrowser();
         let nextPage: string | null | undefined = url;

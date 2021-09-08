@@ -10,7 +10,8 @@
     "prod": "npm run build && npm run start",
     "test": "echo \"Error: no test specified\" && exit 1",
     "craw": "ts-node ./src/craw.ts",
-    "vietnamwork": "pm2 start ./build/src/jobs/vietnamwork.js --no-autorestart --name \"craw_vietnamwork\""
+    "vietnamwork": "pm2 start ./build/src/jobs/vietnamwork.js --no-autorestart --name \"craw_vietnamwork\"",
+    "job1": "pm2 start ./build/src/jobs/job1.js --no-autorestart --name \"craw_job1\""
   },
   "dependencies": {
     "@types/axios": "^0.14.0",

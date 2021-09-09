@@ -5,8 +5,17 @@ import { createPuppeteerBrowser } from "../crawl/helper";
 import { URLConstants, URLCraw } from "../crawl/constants/constant";
 
 async function scrapeWithSchedule() {
+
     try {
         const newBrowser = await createPuppeteerBrowser();
+        setInterval(async () => {
+            try {
+                let pages = await newBrowser.pages();
+                Logger.info(`Browser ${pages.length} is runing`)
+            } catch (err) {
+
+            }
+        }, 2000)
         let res = await Promise.all([
             Crawl.page(URLCraw.careerLink, newBrowser, URLConstants.careerLink),
             Crawl.page(URLCraw.careerbuilder, newBrowser, URLConstants.careerbuilder),

@@ -1,7 +1,7 @@
 import puppeteer, { Browser } from 'puppeteer';
 import { URLConstants } from './constants/constant';
 import Logger from './Log';
-import { closePage, createPuppeteerBrowser, delay, setHeader } from './helper';
+import { closePage, createPage, createPuppeteerBrowser, delay, setHeader } from './helper';
 import { JobsGo, CareerLink, TimViecNhanh, ITViec, Vieclam24h, TopCv, CareerBuilder, ViecTotNhat, TopDev, vlance, yBox } from './index'
 import config from '../database/config';
 import { getConfigCraw } from '../database/entities';
@@ -77,13 +77,17 @@ async function page(url: string, browser: puppeteer.Browser | undefined, domain:
             currentUrl = configCraw.page || url;
         }
         const newBrowser = browser || await createPuppeteerBrowser();
-        const page = await newBrowser.newPage();
+        let page = await createPage(newBrowser);
+        if (!page) {
+            return [];
+        }
         await setHeader(page);
         Logger.info(`Starting load ${currentUrl}`);
         let items = await getJobInPage(currentUrl, newBrowser, page);
         await closePage(page);
         if (!browser) {
             await newBrowser.close();
+            newBrowser.process()?.kill();
         }
         Logger.info(`Load done: ${domain} count: ${items.length}`);
         return items;
@@ -103,7 +107,11 @@ async function all(url: string, browser?: puppeteer.Browser, delayTime: number =
         let curentPage = 1;
         while (nextPage) {
             Logger.info(`Load data next page: ${nextPage}`);
-            const page = await newBrowser.newPage();
+            let page = await createPage(newBrowser);
+            if (!page) {
+                page = null;
+                continue
+            }
             await setHeader(page);
             await getJobInPage(nextPage, newBrowser, page);
             if (curentPage < maxPage) {
@@ -129,7 +137,11 @@ async function all(url: string, browser?: puppeteer.Browser, delayTime: number =
 async function pageInfinite(url: string, browser?: puppeteer.Browser, maxItem: number = 20) {
     try {
         const newBrowser = browser || await createPuppeteerBrowser();
-        const page = await newBrowser.newPage();
+        let page = await createPage(newBrowser)
+        if (!page) {
+            page = null;
+            return [];
+        }
         await setHeader(page);
         let totalJob: number = 0;
         Logger.info(`Load data next page: ${url}`);

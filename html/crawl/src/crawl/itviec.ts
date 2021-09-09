@@ -5,7 +5,7 @@ import config from '../database/config';
 import { Job, saveConfig, saveJob } from '../database/entities';
 import Logger from './Log';
 import { CareerBuilderJob } from './careerbuilder';
-import { closePage, convertTimeAgoToDate, convertToJob, delay, scrollToBottom, setHeader } from './helper';
+import { closePage, convertTimeAgoToDate, convertToJob, createPage, delay, scrollToBottom, setHeader } from './helper';
 
 
 const getNextPage = async (page: puppeteer.Page) => {
@@ -100,17 +100,20 @@ const getJobDetail = (): CareerBuilderJob => {
 }
 
 async function scapeDetail(link: string, browser: puppeteer.Browser) {
-    const pageDetail = await browser.newPage();
+    let pageDetail = await createPage(browser);
     try {
-        await setHeader(pageDetail);
+        if (!pageDetail) {
+            return null
+        }
         await pageDetail.goto(link, { waitUntil: 'networkidle0', timeout: config.timeout });
-        await pageDetail.waitForSelector('img.lazyload');
         const jobDetail = await pageDetail.evaluate(getJobDetail);
         await closePage(pageDetail);
+        pageDetail = null;
         return jobDetail
     } catch (error) {
         Logger.error(`link: ${error}`)
-        await pageDetail.close();
+        await pageDetail?.close()
+        pageDetail = null;
         return null
     }
 }

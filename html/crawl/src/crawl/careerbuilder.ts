@@ -2,7 +2,7 @@ import puppeteer from 'puppeteer';
 import config from '../database/config';
 import { Job, saveConfig, saveJob } from '../database/entities';
 import Logger from './Log';
-import { closePage, convertToJob, delay, scrollToBottom } from './helper';
+import { closePage, convertToJob, createPage, delay, scrollToBottom } from './helper';
 import { URLConstants, URLCraw } from './constants/constant';
 
 export type CareerBuilderJob = {
@@ -153,15 +153,20 @@ const getJobDetail = (): CareerBuilderJob => {
 }
 
 async function scapeDetail(link: string, browser: puppeteer.Browser) {
-    const pageDetail = await browser.newPage();
+    let pageDetail = await createPage(browser);
     try {
+        if (!pageDetail) {
+            return null
+        }
         await pageDetail.goto(link, { waitUntil: 'networkidle0', timeout: config.timeout });
         const jobDetail = await pageDetail.evaluate(getJobDetail);
         await closePage(pageDetail);
+        pageDetail = null;
         return jobDetail
     } catch (error) {
         Logger.error(`link: ${error}`)
-        await pageDetail.close()
+        await pageDetail?.close()
+        pageDetail = null;
         return null
     }
 }

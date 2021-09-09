@@ -3,7 +3,7 @@ import { Prefix } from './constants/constant';
 import { Job, saveJob } from '../database/entities';
 import Logger from './Log';
 import { CareerBuilderJob } from './careerbuilder';
-import { closePage, convertTimeAgoToDate, convertToJob, createPuppeteerBrowser, delay, scrollToBottom, setHeader } from './helper';
+import { closePage, convertTimeAgoToDate, convertToJob, createPage, createPuppeteerBrowser, delay, scrollToBottom, setHeader } from './helper';
 import config from '../database/config';
 
 
@@ -100,8 +100,12 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
         for (let index = 0; index < maxJobs; index++) {
             const job = jobs[index];
             Logger.info("Ybox create new Browser")
-            const newBrowser = await createPuppeteerBrowser();
-            const pageDetail = await newBrowser.newPage();
+            let newBrowser = await createPuppeteerBrowser();
+            const pageDetail = await createPage(newBrowser);
+            if (!pageDetail) {
+                await newBrowser.close();
+                continue
+            }
             await pageDetail.goto(job.link!, { waitUntil: 'networkidle0', timeout: config.timeout });
             const jobDetails = await pageDetail.evaluate(getJobDetail);
             await closePage(pageDetail)

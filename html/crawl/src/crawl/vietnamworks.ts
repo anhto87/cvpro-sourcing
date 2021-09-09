@@ -2,7 +2,7 @@ import axios, { Method } from 'axios';
 import { URLConstants } from './constants/constant';
 import { Job, saveJob } from '../database/entities';
 import Logger from './Log';
-import { closePage, createPuppeteerBrowser, delay, slugify } from "./helper";
+import { closePage, createPage, createPuppeteerBrowser, delay, slugify } from "./helper";
 import { saveConfig, getConfigCraw } from '../database/entities/craw_config';
 
 interface APIRequestConfig {
@@ -160,7 +160,10 @@ const getBody = (obj: string, page: number = 0) => {
 const apiGetDataConfig = async (url: string, pageNumber: number = 0): Promise<APIRequestConfig | null> => {
     try {
         const browser = await createPuppeteerBrowser();
-        const page = await browser.newPage();
+        let page = await createPage(browser);
+        if (!page) {
+            return null
+        }
         let apiRequest: APIRequestConfig | null = null;
 
         await page.setRequestInterception(true);
@@ -185,6 +188,7 @@ const apiGetDataConfig = async (url: string, pageNumber: number = 0): Promise<AP
 
         await page.goto(url, { waitUntil: 'networkidle0' });
         await closePage(page);
+        page = null;
         await browser.close();
         return apiRequest;
     } catch (err) {

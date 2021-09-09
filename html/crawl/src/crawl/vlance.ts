@@ -130,7 +130,7 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
             'domain': 'www.vlance.vn'
         }]
         await page.setCookie(...cookies);
-        await page.goto(url, { waitUntil: 'networkidle0', timeout: 0 });
+        await page.goto(url, { waitUntil: 'networkidle0', timeout: config.timeout });
         await scrollToBottom(page);
         let nextPage = await getNextPage(page) || URLCraw.vlance;
         const jobs = await page.evaluate(getJobs);

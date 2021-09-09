@@ -169,7 +169,7 @@ async function scapeDetail(link: string, browser: puppeteer.Browser) {
 async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppeteer.Page) {
     const { maxDelayTime, minDelayTime } = config;
     try {
-        await page.goto(url, { waitUntil: 'networkidle0', timeout: 0 });
+        await page.goto(url, { waitUntil: 'networkidle0', timeout: config.timeout });
         await scrollToBottom(page);
         const jobs = await page.evaluate(getJobs);
         let nextPage = await getNextPage(page) || URLCraw.careerbuilder;

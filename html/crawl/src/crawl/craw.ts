@@ -131,7 +131,7 @@ async function pageInfinite(url: string, browser?: puppeteer.Browser, maxItem: n
         await setHeader(page);
         let totalJob: number = 0;
         Logger.info(`Load data next page: ${url}`);
-        await page.goto(url, { waitUntil: 'networkidle0', timeout: 0 });
+        await page.goto(url, { waitUntil: 'networkidle0', timeout: config.timeout });
         Logger.info(`Loadmore: ${url}`);
         while (totalJob < maxItem) {
             let total = await getTotalItems(page, url);

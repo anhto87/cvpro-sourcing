@@ -117,7 +117,7 @@ async function scapeDetail(link: string, browser: puppeteer.Browser) {
 
 async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppeteer.Page) {
     try {
-        await page.goto(url, { waitUntil: 'networkidle0', timeout: 0 });
+        await page.goto(url, { waitUntil: 'networkidle0', timeout: config.timeout });
         await page.evaluate(() => {
             document.querySelector('div.search-page__job-preview')?.remove();
         })

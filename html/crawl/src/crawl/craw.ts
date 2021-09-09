@@ -67,7 +67,7 @@ const getTotalItems = async (page: puppeteer.Page, url: string): Promise<number 
     return undefined;
 }
 
-async function page(url: string, browser: puppeteer.Browser, domain: string) {
+async function page(url: string, browser: puppeteer.Browser | undefined, domain: string) {
     try {
         const number = (Math.floor(Math.random() * (config.maxDelayTime - config.minDelayTime)) + config.minDelayTime) * 1000;
         await delay(number)
@@ -156,7 +156,8 @@ async function pageInfinite(url: string, browser?: puppeteer.Browser, maxItem: n
         }
         let items = await getJobInPage(url, newBrowser, page, maxItem);
         if (!browser) {
-            await newBrowser.close();
+            newBrowser.process()?.kill();
+
         }
         return items
     } catch (err) {

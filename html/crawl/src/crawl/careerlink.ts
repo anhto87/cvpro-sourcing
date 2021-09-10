@@ -1,27 +1,29 @@
 import puppeteer from 'puppeteer';
-import { Prefix } from './constants/constant';
+import { Prefix, URLConstants, URLCraw } from './constants/constant';
 import config from '../database/config';
-import { Job, saveJob } from '../database/entities';
+import { Job, saveConfig, saveJob } from '../database/entities';
 import Logger from './Log';
 import { CareerBuilderJob } from './careerbuilder';
-import { closePage, convertTimeAgoToDate, convertToJob, scrollToBottom } from './helper';
+import { closePage, convertTimeAgoToDate, convertToJob, createPage, delay, scrollToBottom } from './helper';
 
 
 const getNextPage = async (page: puppeteer.Page) => {
-    function parseLink(link: string) {
-        if (link.includes('http')) { return link } else if (link.length == 0) { return '' }
-        return location.origin + link;
-    }
     const nextPageUrl = await page.evaluate(() => {
-        const pages = document.querySelectorAll('ul.pagination li a');
+        function parseLink(link: string) {
+            if (link.includes('http')) { return link } else if (link.length == 0) { return '' }
+            return location.origin + link;
+        }
+        const pages = document.querySelectorAll('ul.pagination li');
         const activePage = Array.from(pages).findIndex(ele => {
             return ele.className.includes('active');
         })
         if (activePage != -1 && pages.length > (activePage + 1)) {
-            return parseLink(pages[activePage + 1].getAttribute('href') || '');
+            const nextPage = pages[activePage + 1]
+            return parseLink(nextPage.querySelector('a')?.getAttribute('href') || '');
         }
         return null;
     })
+    Logger.info(`Next Page ${nextPageUrl}`)
     return nextPageUrl;
 }
 
@@ -66,7 +68,7 @@ const getJobDetail = (): CareerBuilderJob => {
     let expiredDate: string = (document.querySelector('div.job-expire span[itemprop="validThrough"]')?.textContent || '').trim();
     let publishedDate: string = (document.querySelector('div.job-expire span[itemprop="datePosted"]')?.textContent || '').trim();
     let jobDescription: string = '';
-    
+
     let jobDetailContentEles = Array.from(document.querySelectorAll('#section-job-description div'));
     if (jobDetailContentEles.length > 0) {
         for (let index = 0; index < jobDetailContentEles.length; index++) {
@@ -85,19 +87,38 @@ const getJobDetail = (): CareerBuilderJob => {
     return {};
 }
 
+async function scapeDetail(link: string, browser: puppeteer.Browser) {
+    let pageDetail = await createPage(browser);
+    try {
+        if (!pageDetail) {
+            return null
+        }
+        await pageDetail.goto(link, { waitUntil: 'networkidle0', timeout: config.timeout });
+        const jobDetail = await pageDetail.evaluate(getJobDetail);
+        await closePage(pageDetail);
+        pageDetail = null;
+        return jobDetail
+    } catch (error) {
+        Logger.error(`link: ${error}`)
+        await pageDetail?.close()
+        pageDetail = null;
+        return null
+    }
+}
+
 async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppeteer.Page) {
     try {
-        await page.goto(url, { waitUntil: 'networkidle0', timeout: 0 });
+        await page.goto(url, { waitUntil: 'networkidle0', timeout: config.timeout });
         await scrollToBottom(page);
+        let nextPage = await getNextPage(page) || URLCraw.careerLink;
         const jobs = await page.evaluate(getJobs);
         await closePage(page);
         const items: Job[] = [];
         for (const job of jobs) {
-            const pageDetail = await browser.newPage();
-            await pageDetail.goto(job.link!, { waitUntil: 'networkidle0', timeout: config.timeout });
-            const jobDetail = await pageDetail.evaluate(getJobDetail);
-            await closePage(pageDetail);
-
+            const jobDetail = await scapeDetail(job.link!, browser);
+            if (!jobDetail) {
+                continue
+            }
             const item = convertToJob({
                 ...job,
                 ...jobDetail,
@@ -106,10 +127,10 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
             });
             await saveJob(item);
             const number = (Math.floor(Math.random() * (config.maxDelayTime - config.minDelayTime)) + config.minDelayTime) * 1000;
-            await pageDetail.waitForTimeout(number)
+            await delay(number)
             items.push(item);
         }
-        Logger.info(`Load data page: ${url} count: ${items.length}`);
+        await saveConfig({ name: URLConstants.careerLink, page: nextPage });
         return items;
     } catch (err) {
         Logger.error(err);

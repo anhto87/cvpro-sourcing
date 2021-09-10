@@ -1,9 +1,9 @@
 import puppeteer from 'puppeteer';
-import { Prefix } from './constants/constant';
-import { Job, saveJob } from '../database/entities';
+import { Prefix, URLConstants, URLCraw } from './constants/constant';
+import { Job, saveConfig, saveJob } from '../database/entities';
 import Logger from './Log';
 import { CareerBuilderJob } from './careerbuilder';
-import {closePage, convertExpireDate, convertTimeAgoToDate, convertToJob, scrollToBottom} from './helper';
+import { closePage, convertExpireDate, convertTimeAgoToDate, convertToJob, createPage, delay, scrollToBottom } from './helper';
 import md5 from 'md5';
 import config from '../database/config';
 
@@ -25,6 +25,7 @@ const getNextPage = async (page: puppeteer.Page) => {
         }
         return null;
     })
+    Logger.info(`Next Page ${nextPageUrl}`)
     return nextPageUrl;
 }
 //ankiinn1@gmail.com
@@ -106,6 +107,25 @@ const getJobDetail = (): CareerBuilderJob => {
     return { companyLogo, company, jobDescription, jobType, publishedDate, jobId };
 }
 
+async function scapeDetail(link: string, browser: puppeteer.Browser) {
+    let pageDetail = await createPage(browser);
+    try {
+        if (!pageDetail) {
+            return null
+        }
+        await pageDetail.goto(link, { waitUntil: 'networkidle0', timeout: config.timeout });
+        const jobDetail = await pageDetail.evaluate(getJobDetail);
+        await closePage(pageDetail);
+        pageDetail = null;
+        return jobDetail
+    } catch (error) {
+        Logger.error(`link: ${error}`)
+        await pageDetail?.close()
+        pageDetail = null;
+        return null
+    }
+}
+
 async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppeteer.Page) {
     try {
         const cookies = [{
@@ -115,16 +135,17 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
             'domain': 'www.vlance.vn'
         }]
         await page.setCookie(...cookies);
-        await page.goto(url, { waitUntil: 'networkidle0', timeout: 0 });
+        await page.goto(url, { waitUntil: 'networkidle0', timeout: config.timeout });
         await scrollToBottom(page);
+        let nextPage = await getNextPage(page) || URLCraw.vlance;
         const jobs = await page.evaluate(getJobs);
         await closePage(page);
         const items: Job[] = [];
         for (const job of jobs) {
-            const pageDetail = await browser.newPage();
-            await pageDetail.goto(job.link!, { waitUntil: 'networkidle0', timeout: config.timeout });
-            const jobDetail = await pageDetail.evaluate(getJobDetail);
-            await closePage(pageDetail);
+            const jobDetail = await scapeDetail(job.link!, browser);
+            if (!jobDetail) {
+                continue
+            }
             const publishedDate = convertTimeAgoToDate(jobDetail.publishedDate || '');
             const expiredDate = convertExpireDate(job.expiredDate || '');
             const item = convertToJob({
@@ -136,10 +157,10 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
             });
             await saveJob(item);
             const number = (Math.floor(Math.random() * (config.maxDelayTime - config.minDelayTime)) + config.minDelayTime) * 1000;
-            await pageDetail.waitForTimeout(number)
+            await delay(number);
             items.push(item);
         }
-        Logger.info(`Load data page: ${url} count: ${items.length}`);
+        await saveConfig({ name: URLConstants.vlance, page: nextPage });
         return items;
     } catch (err) {
         Logger.error(err);

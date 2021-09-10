@@ -3,7 +3,7 @@ import { Prefix } from './constants/constant';
 import { Job, saveJob } from '../database/entities';
 import Logger from './Log';
 import { CareerBuilderJob } from './careerbuilder';
-import { closePage, convertTimeAgoToDate, convertToJob, scrollToBottom, setHeader } from './helper';
+import { closePage, convertTimeAgoToDate, convertToJob, createPage, createPuppeteerBrowser, delay, scrollToBottom, setHeader } from './helper';
 import config from '../database/config';
 
 
@@ -93,15 +93,25 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
     try {
         const jobs = await page.evaluate(getJobs);
         await closePage(page);
+        await browser.close();
         Logger.info(`url: ${url} start scrape ${jobs.length}`)
         const items: Job[] = [];
         const maxJobs = jobs.length >= maxItem ? maxItem : jobs.length;
         for (let index = 0; index < maxJobs; index++) {
             const job = jobs[index];
-            const pageDetail = await browser.newPage();
+            Logger.info("Ybox create new Browser")
+            let newBrowser = await createPuppeteerBrowser();
+            const pageDetail = await createPage(newBrowser);
+            if (!pageDetail) {
+                await newBrowser.close();
+                continue
+            }
             await pageDetail.goto(job.link!, { waitUntil: 'networkidle0', timeout: config.timeout });
             const jobDetails = await pageDetail.evaluate(getJobDetail);
             await closePage(pageDetail)
+            Logger.info("Ybox comming close new Browser")
+            await newBrowser.close();
+            Logger.info("Ybox closed new Browser")
             for (const jobDetail of jobDetails) {
                 const onlineDate = convertTimeAgoToDate(job.onlineDate || '');
                 const item = convertToJob({
@@ -114,7 +124,7 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
                 items.push(item);
             }
             const number = (Math.floor(Math.random() * (config.maxDelayTime - config.minDelayTime)) + config.minDelayTime) * 1000;
-            await pageDetail.waitForTimeout(number)
+            await delay(number)
         }
         Logger.info(`Load data page: ${url} count: ${items.length}`);
         return items;

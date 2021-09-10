@@ -22,12 +22,12 @@ app.get('/jobs', (req, res) => {
         })
 })
 
-app.get('/crawl', (req, res) => {
-    let url = req.query.url as string;
-    res.setHeader('Content-Type', 'application/json');
-    Crawl.page(url)
-        .then(items => res.send(JSON.stringify({ items, count: items.length }, null, '\t')))
-})
+// app.get('/crawl', (req, res) => {
+//     let url = req.query.url as string;
+//     res.setHeader('Content-Type', 'application/json');
+//     Crawl.page(url)
+//         .then(items => res.send(JSON.stringify({ items, count: items.length }, null, '\t')))
+// })
 
 app.listen(PORT, () => {
     console.log(`⚡️[server]: Server is running at https://localhost:${PORT}`);

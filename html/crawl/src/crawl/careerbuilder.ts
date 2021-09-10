@@ -1,8 +1,9 @@
 import puppeteer from 'puppeteer';
 import config from '../database/config';
-import { Job, saveJob } from '../database/entities';
+import { Job, saveConfig, saveJob } from '../database/entities';
 import Logger from './Log';
-import { closePage, convertToJob, scrollToBottom } from './helper';
+import { closePage, convertToJob, createPage, delay, scrollToBottom } from './helper';
+import { URLConstants, URLCraw } from './constants/constant';
 
 export type CareerBuilderJob = {
     jobId?: string;
@@ -41,6 +42,7 @@ const getNextPage = async (page: puppeteer.Page) => {
         }
         return null;
     })
+    Logger.info(`Next Page ${nextPageUrl}`)
     return nextPageUrl;
 }
 
@@ -150,26 +152,43 @@ const getJobDetail = (): CareerBuilderJob => {
     return {};
 }
 
+async function scapeDetail(link: string, browser: puppeteer.Browser) {
+    let pageDetail = await createPage(browser);
+    try {
+        if (!pageDetail) {
+            return null
+        }
+        await pageDetail.goto(link, { waitUntil: 'networkidle0', timeout: config.timeout });
+        const jobDetail = await pageDetail.evaluate(getJobDetail);
+        await closePage(pageDetail);
+        pageDetail = null;
+        return jobDetail
+    } catch (error) {
+        Logger.error(`link: ${error}`)
+        await pageDetail?.close()
+        pageDetail = null;
+        return null
+    }
+}
+
 async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppeteer.Page) {
     const { maxDelayTime, minDelayTime } = config;
     try {
-        await page.goto(url, { waitUntil: 'networkidle0', timeout: 0 });
+        await page.goto(url, { waitUntil: 'networkidle0', timeout: config.timeout });
         await scrollToBottom(page);
         const jobs = await page.evaluate(getJobs);
+        let nextPage = await getNextPage(page) || URLCraw.careerbuilder;
         await closePage(page);
         const items: Job[] = [];
         for (const job of jobs) {
-            const pageDetail = await browser.newPage();
-            await pageDetail.goto(job.link!, { waitUntil: 'networkidle0', timeout: config.timeout });
-            const jobDetail = await pageDetail.evaluate(getJobDetail);
-            await closePage(pageDetail);
+            const jobDetail = await scapeDetail(job.link!, browser);
             const item = convertToJob({ ...job, ...jobDetail })
             await saveJob(item);
             const number = (Math.floor(Math.random() * (maxDelayTime - minDelayTime)) + minDelayTime) * 1000;
-            await pageDetail.waitForTimeout(number)
+            await delay(number)
             items.push(item);
         }
-        Logger.info(`Load data page: ${url} count: ${items.length}`);
+        await saveConfig({ name: URLConstants.careerbuilder, page: nextPage });
         return items;
     } catch (err) {
         Logger.error(err);

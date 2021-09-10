@@ -12,10 +12,7 @@ export const ListJobSuggest = ({ items, onPressLink }) => {
                     return (
                         <div key={index}>
                             <Link onClick={() => onPressLink(job)}>
-                                <Link level={5}
-                                    className='job-link'
-                                    onClick={() => onPressLink(job)}
-                                >
+                                <Link level={5} className='job-link'>
                                     {job?.jobTitle}
                                 </Link>
                                 <Row justify="start" align="middle" className="padB10">

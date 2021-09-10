@@ -16,7 +16,7 @@ export const getListJobURL = ({ keyword, address, time, page, jobType }) => {
     if (jobType && jobType !== FilterJobTypes.all) {
         querys['type'] = jobType;
     }
-    if (page !== 1) {
+    if (page && page !== 1) {
         querys['page'] = page;
     }
     let searchParams = new URLSearchParams(querys).toString();

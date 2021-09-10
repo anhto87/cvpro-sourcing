@@ -4,7 +4,7 @@ import config from '../database/config';
 import { Job, saveJob } from '../database/entities';
 import Logger from './Log';
 import { CareerBuilderJob } from './careerbuilder';
-import { closePage, convertTimeAgoToDate, convertToJob, scrollToBottom, setHeader } from './helper';
+import { closePage, convertTimeAgoToDate, convertToJob, createPage, delay, scrollToBottom, setHeader } from './helper';
 
 
 const getNextPage = async (page: puppeteer.Page) => null;
@@ -92,10 +92,14 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
         const maxIndex = jobs.length >= maxItem ? maxItem : jobs.length;
         for (let index = 0; index < maxIndex; index++) {
             const job = jobs[index];
-            const pageDetail = await browser.newPage();
+            let pageDetail = await createPage(browser);
+            if (!pageDetail) {
+                continue
+            }
             await pageDetail.goto(job.link!, { waitUntil: 'networkidle0', timeout: config.timeout });
             const jobDetail = await pageDetail.evaluate(getJobDetail);
             await closePage(pageDetail);
+            pageDetail = null;
             const item = convertToJob({
                 ...job,
                 ...jobDetail,
@@ -104,7 +108,7 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
             });
             await saveJob(item);
             const number = (Math.floor(Math.random() * (config.maxDelayTime - config.minDelayTime)) + config.minDelayTime) * 1000;
-            await pageDetail.waitForTimeout(number)
+            await delay(number)
             items.push(item);
         }
         Logger.info(`Load data page: ${url} count: ${items.length}`);

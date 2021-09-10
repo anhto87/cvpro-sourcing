@@ -2,6 +2,7 @@ import moment from 'moment';
 import puppeteer from 'puppeteer';
 import { Job } from '../database/entities';
 import { CareerBuilderJob } from './careerbuilder';
+import Logger from './Log';
 
 export const slugify = (str: string, separator = "-") => {
     return str
@@ -22,13 +23,47 @@ export const createPuppeteerBrowser = async () => {
     })
 }
 
+export const createPage = async (browser: puppeteer.Browser) => {
+    try {
+        let page = await browser.newPage();
+        await page.setViewport({ width: 1920, height: 1080 });
+        await page.setRequestInterception(true);
+        page.on('request', (req) => {
+            if (req.resourceType() == 'stylesheet' || req.resourceType() == 'font' || req.resourceType() == 'image') {
+                req.abort();
+            } else {
+                req.continue();
+            }
+        });
+        return page;
+    } catch (err) {
+        return null;
+    }
+}
+
 export const closePage = async (page: puppeteer.Page) => {
+    if (page.isClosed()) {
+        return true
+    }
     await page.goto('about:blank');
     await page.close();
+    return false
 }
+
+export function delay(delayInms: number) {
+    Logger.info(`Waiting me in ${delayInms}`)
+    return new Promise(resolve => {
+        setTimeout(() => {
+            Logger.info(`Thank for wait`)
+            resolve(2);
+        }, delayInms);
+    });
+}
+
 
 export async function setHeader(page: puppeteer.Page) {
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.109 Safari/537.36');
+    return true
 }
 
 export async function scrollToBottom(page: puppeteer.Page) {
@@ -43,6 +78,7 @@ export async function scrollToBottom(page: puppeteer.Page) {
         });
         await page.waitForTimeout(500);
     }
+    return true
 }
 
 export function clean(obj: any) {

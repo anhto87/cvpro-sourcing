@@ -2,7 +2,8 @@ import axios, { Method } from 'axios';
 import { URLConstants } from './constants/constant';
 import { Job, saveJob } from '../database/entities';
 import Logger from './Log';
-import {closePage, createPuppeteerBrowser, slugify} from "./helper";
+import { closePage, createPage, createPuppeteerBrowser, delay, slugify } from "./helper";
+import { saveConfig, getConfigCraw } from '../database/entities/craw_config';
 
 interface APIRequestConfig {
     method: string;
@@ -54,7 +55,7 @@ interface VietNamWorkJob {
     classifiedConfidenceSkills?: any[];
     classifiedSkills?: any[];
     objectID?: number;
-    jobTitleSlug?:string;
+    jobTitleSlug?: string;
 }
 
 interface VietNamWorkResultItem {
@@ -158,9 +159,11 @@ const getBody = (obj: string, page: number = 0) => {
 
 const apiGetDataConfig = async (url: string, pageNumber: number = 0): Promise<APIRequestConfig | null> => {
     try {
-        Logger.info(new Date().toISOString(), "Vietnamwork start load apiGetDataConfig")
         const browser = await createPuppeteerBrowser();
-        const page = await browser.newPage();
+        let page = await createPage(browser);
+        if (!page) {
+            return null
+        }
         let apiRequest: APIRequestConfig | null = null;
 
         await page.setRequestInterception(true);
@@ -185,11 +188,10 @@ const apiGetDataConfig = async (url: string, pageNumber: number = 0): Promise<AP
 
         await page.goto(url, { waitUntil: 'networkidle0' });
         await closePage(page);
+        page = null;
         await browser.close();
-        Logger.info("Vietnamwork load apiGetDataConfig done")
         return apiRequest;
     } catch (err) {
-        Logger.error(`Vietnamwork load apiGetDataConfig error ${err}`);
         return null;
     }
 }
@@ -199,7 +201,6 @@ async function getJobs(config: APIRequestConfig): Promise<VietNamWorkResultItem 
     let results = (res.data as VietNamWorkData).results || [];
     let obj = results.length > 0 ? results[0] : null;
     if (obj) {
-        Logger.info(`Vietnamwork getJobs loaded ${config.url} ${config.data} ${obj.hits?.length || 0}, nbPages ${obj.nbPages}`);
         return obj;
     }
     Logger.info("Vietnamwork getJobs failed");
@@ -225,25 +226,34 @@ export async function VietNamWorkWithPage(url: string, page: number = 0): Promis
     }
 }
 
-export async function VietNamWorkAll(url: string) {
+export async function VietNamWorkAll(url: string, delayMinus: number = 5) {
     try {
-        let config = await apiGetDataConfig(url, 0);
+        let configCraw = await getConfigCraw(URLConstants.vietnamWork);
+        let configPage = configCraw?.currentPage || 0;
+        Logger.info(`Vietnamwwork start load from page: ${configPage}`);
+        let config = await apiGetDataConfig(url, configPage);
         if (config) {
             let res = await getJobs(config);
             let jobs = res?.hits || [];
+            const page = res?.page || 0;
+            const maxPage = res?.nbPages || 0;
             for (const job of jobs) {
                 await saveJob(convertToJob(job, URLConstants.vietnamWork))
             }
+            await saveConfig({ name: URLConstants.vietnamWork, currentPage: page, totalPage: maxPage });
 
-            const maxPage = res?.nbPages || 0;
-            for (let index = 1; index <= maxPage; index++) {
+            let nextPage = page + 1;
+            await delay(delayMinus * 60 * 1000);
+            for (let index = nextPage; index < maxPage; index++) {
                 let newData = getBody(config.data as string, index);
-                Logger.info(`VietNamWorkAll start load url: ${config.url} page: ${index}`);
+                Logger.info(`VietNamWorkAll page: ${index}`);
                 let newJobs = (await getJobs({ ...config, data: newData }))?.hits || [];
                 for (const job of newJobs) {
                     await saveJob(convertToJob(job, URLConstants.vietnamWork))
                 }
-                Logger.info(`VietNamWorkAll loaded url: ${config.url} page: ${index} jobs: ${newJobs.length}`);
+                Logger.info(`VietNamWorkAll loaded page: ${index} jobs: ${newJobs.length}`);
+                await delay(delayMinus * 60 * 1000);
+                await saveConfig({ name: URLConstants.vietnamWork, currentPage: (index === (maxPage - 1) ? 0 : (index + 1)), totalPage: maxPage });
             }
             Logger.info("VietNamWorkAll crawl data done");
             return true;

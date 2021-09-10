@@ -1,5 +1,5 @@
 import './home.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from "react-router-dom";
 import { Row, Button, Form, Layout, Typography, Col } from 'antd';
 import { useLocalStorage, useTotalJobs } from '../../global/hooks';
@@ -7,7 +7,6 @@ import { getListJobURL, LogoName, StorageSearchRecents } from '../../global/help
 import _ from 'lodash';
 import { SearchRecentsTable } from './components/SearchRecentsTable';
 import { SearchForm } from '../../components/SearchForm';
-import { useEffect } from 'react/cjs/react.development';
 const { Content, Footer } = Layout;
 
 export const Home = () => {
@@ -64,9 +63,9 @@ export const Home = () => {
 
     return (
         <>
-            <Content>
+            <Content style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <div className="content-container">
-                    <Row justify='center' align='top' style={{ marginTop: 180 }}>
+                    <Row justify='center' align='middle'>
                         <Col span={18}>
                             <Row justify='start' className="logo-container">
                                 <Typography.Link style={{ color: 'black' }} onClick={onPressGoHome}>{LogoName}</Typography.Link>

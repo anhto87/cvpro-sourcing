@@ -3,6 +3,17 @@
  * Constant
  * 
  */
+export enum URLCraw {
+    careerbuilder = "https://careerbuilder.vn/viec-lam/tat-ca-viec-lam-vi.html",
+    jobsGo = "https://jobsgo.vn/viec-lam.html",
+    vieclam24h = "https://vieclam24h.vn/tim-kiem-viec-lam-nhanh",
+    itviec = "https://itviec.com/it-jobs",
+    timViecNhanh = "https://timviecnhanh.com/vieclam/timkiem?",
+    careerLink = "https://www.careerlink.vn/vieclam/list",
+    topcv = "https://www.topcv.vn/tim-viec-lam-moi-nhat",
+    viecTotNhat = "https://viectotnhat.com/viec-lam/tim-kiem",
+    vlance = "https://www.vlance.vn/viec-lam-freelance",
+}
 
 export enum URLConstants {
     vietnamWork = "https://www.vietnamworks.com",

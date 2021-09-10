@@ -3,7 +3,7 @@
  * 
  * 
  */
-import { fetchApi, fetchApiCustomURL } from '../utils';
+import { fetchApi } from '../utils';
 
 class API {
 
@@ -22,14 +22,7 @@ class API {
     }
 
     async getJobsSuggest() {
-        return await fetchApiCustomURL(`https://nhanlucvietnam.net/api/jobs`, {
-            method: "GET",
-            mode: 'no-cors',
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-                "Content-Type": "application/json",
-            },
-        });
+        return await fetchApi(`/jobs/cvpro.top`, { method: "GET" });
     }
 }
 

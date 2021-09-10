@@ -9,6 +9,7 @@ import { getListJobURL, LogoName } from '../../global/helpers';
 import apis from '../../global/helpers/apis';
 import { NoData } from '../../components/NoData';
 import { JobDescription } from './JobDescription';
+import logo from '../../assets/logo_3.svg';
 
 const { Title, Text } = Typography;
 const { Content, Footer } = Layout;
@@ -112,12 +113,14 @@ export const JobDetail = () => {
             <NoData />
         </Row>;
     };
-    console.log(job);
+
     return (
         <>
             <Row justify='space-between' align='middle' className='header'>
                 <Col className='logo-header'>
-                    <Typography.Link style={{ color: 'black' }} onClick={onPressGoHome}>{LogoName}</Typography.Link>
+                    <Typography.Link style={{ color: 'black' }} onClick={onPressGoHome}>
+                        <img style={{ height: 19 }} src={logo} className="App-logo" alt="logo" />
+                    </Typography.Link>
                 </Col>
             </Row>
             <Content>

@@ -8,6 +8,7 @@ export const StorageSearchRecents = "SearchRecents";
 
 export const vietnamwork = "www.vietnamworks.com";
 export const NhanSuVietNam = "nhanlucvietnam.net";
+export const CVPRO = "cvpro.top";
 
 export const FILTER_TYPE_JOBTYPE = "JOB_TYPE";
 export const FILTER_TYPE_TIME = "CREATE_DATE";

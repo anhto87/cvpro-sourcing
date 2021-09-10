@@ -44,6 +44,7 @@ const AppRouter = () => {
                 <Route exact path="/" component={Home} />
                 <Route exact path="/tim-viec" component={ListJob} />
                 <Route exact path="/tim-viec/:id" component={JobDetail} />
+                <Route exact path="/tim-viec/top/:id" component={JobDetail} />
                 <Route exact path="/login" component={Login} />
                 {/* <ProtectedRouter exact path="/" component={Dashboard} /> */}
                 <ProtectedRouter

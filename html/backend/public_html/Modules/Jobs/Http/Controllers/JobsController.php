@@ -10,6 +10,7 @@ use MongoDB\BSON\UTCDateTime;
 
 class JobsController
 {
+    use TraitCVProTop;
     private JobsRepository $jobsRepository;
     private Request        $request;
 

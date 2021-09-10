@@ -15,4 +15,5 @@ use Modules\Jobs\Http\Controllers\JobsController;
 Route::group(['prefix' => 'jobs'], function() {
     Route::post('/{job_id}', [JobsController::class, 'detail']);
     Route::get('/query', [JobsController::class, 'query']);
+    Route::get('/cvpro.top', [JobsController::class, 'queryCVProTop']);
 });

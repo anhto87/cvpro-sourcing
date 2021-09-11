@@ -19,11 +19,11 @@ trait TraitCVProTop
 
     public function detailCVProTop(Request $request, $job_id): \Illuminate\Http\JsonResponse
     {
-        $response = Http::get('https://nhanlucvietnam.net/api/job?' . $job_id);
+        $response = Http::get('https://nhanlucvietnam.net/api/job?id=' . $job_id);
         if ($response->status() === 200) {
             $body = $response->json();
 
-            return response()->json(['jobs' => $body['data']]);
+            return response()->json(['data' => $body['data']]);
         }
 
         return response()->json(['jobs' => []]);

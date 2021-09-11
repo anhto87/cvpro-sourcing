@@ -34,9 +34,9 @@ export interface Job {
   expiredDate?: Date;
   onlineDate?: Date;
   jobTitleSlug?: string;
-  publishedTimestamp?:number;
+  publishedTimestamp?: number;
   expiredTimestamp?: number,
-  onlineTimestamp?:number
+  onlineTimestamp?: number
 }
 
 export const JobSchema: Schema<Job> = new Schema<Job>({
@@ -76,10 +76,10 @@ export const JobSchema: Schema<Job> = new Schema<Job>({
   expiredDate: Date,
   publishedDate: Date,
   onlineDate: Date,// thời gian lắm mới job => chắc là đẩy job lên top
-  jobTitleSlug:String,
-  publishedTimestamp:Number,
-  expiredTimestamp:Number,
-  onlineTimestamp:Number,
+  jobTitleSlug: String,
+  publishedTimestamp: Number,
+  expiredTimestamp: Number,
+  onlineTimestamp: Number,
 });
 
 export async function saveJob(job: Job) {
@@ -91,14 +91,18 @@ export async function saveJob(job: Job) {
         cleanJob.companyLogo = companyLogo;
       }
     }
-    let record = await Jobs.findOneAndUpdate({ jobId: cleanJob.jobId }, { ...cleanJob }, { new: true, upsert: true });
+    let record = await Jobs.findOneAndUpdate({ jobId: cleanJob.jobId }, { $set: { ...cleanJob } }, { new: true, upsert: true, useFindAndModify: false });
     if (record) {
-      Logger.info(`saveJob successful ${record?.jobId} ${record.link}`);
+      const domain = cleanJob.domain as string;
+      let total = await Jobs.find({ domain }).count();;
+      Logger.info(`updateJob successful total: ${total} ${record?.jobId} ${record.link}`);
       return true
     } else {
       let create = await Jobs.create(cleanJob);
       if (create) {
-        Logger.info(`saveJob successful ${create?.jobId} ${create.link}`);
+        const domain = cleanJob.domain as string;
+        let total = await Jobs.find({ domain }).count();;
+        Logger.info(`saveJob successful total: ${total} ${create?.jobId} ${create.link}`);
         return true
       }
     }

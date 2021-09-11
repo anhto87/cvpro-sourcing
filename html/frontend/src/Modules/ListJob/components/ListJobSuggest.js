@@ -17,7 +17,7 @@ export const ListJobSuggest = ({ items, onPressLink }) => {
                                 </Link>
                                 <Row justify="start" align="middle" className="padB10">
                                     <FaBuysellads style={{ marginRight: 5 }} />
-                                    <a className="link-second">{job.domain}</a>
+                                    <Link className="link-second">{job.domain}</Link>
                                 </Row>
                                 <Paragraph className='fontW400' ellipsis={{ expandable: false, rows: 3 }}>
                                     {job?.jobDescription}

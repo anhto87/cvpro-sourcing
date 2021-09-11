@@ -74,8 +74,8 @@ const convertSuggestJob = (jobs) => {
             skills.push(skill);
         }
         const benefits = [job?.benefits || ''];
-        const domain = 'nhanlucvietnam.net';
-        const link = `https://nhanlucvietnam.net/${job?.job_slug}`;
+        const domain = 'cvpro.top';
+        const link = `https://cvpro.top/job/${jobId}`;
         const onlineDate = job?.updated_at;
         const publishedDate = job?.created_at;
         const expiredDate = job?.deadline;
@@ -98,7 +98,7 @@ const convertSuggestJob = (jobs) => {
             companyId,
             jobDescription,
             jobRequirement,
-            salary
+            salary,
         });
     }
     return items;

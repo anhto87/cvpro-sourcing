@@ -7,6 +7,7 @@ import { getListJobURL, LogoName, StorageSearchRecents } from '../../global/help
 import _ from 'lodash';
 import { SearchRecentsTable } from './components/SearchRecentsTable';
 import { SearchForm } from '../../components/SearchForm';
+import logo from '../../assets/logo_3.svg';
 const { Content, Footer } = Layout;
 
 export const Home = () => {
@@ -14,7 +15,7 @@ export const Home = () => {
     const [keyword, setKeyword] = useState('');
     const [address, setAddress] = useState('');
     const history = useHistory();
-    const totalJob = useTotalJobs();
+    // const totalJob = useTotalJobs();
     const [recents, setSearchRecents] = useLocalStorage(StorageSearchRecents, []);
 
     useEffect(() => {
@@ -48,18 +49,18 @@ export const Home = () => {
         history.push('/')
     }
 
-    const TotalJobWaiting = ({ display, total }) => {
-        return display && total > 0 ? <Row justify='center' align='top'>
-            <Button
-                color='black'
-                className="linka total-job"
-                type="link">
-                <a>
-                    Tìm <span style={{ fontWeight: 'bold' }}>{total}</span> việc bây giờ
-                </a>
-            </Button>
-        </Row> : null;
-    }
+    // const TotalJobWaiting = ({ display, total }) => {
+    //     return display && total > 0 ? <Row justify='center' align='top'>
+    //         <Button
+    //             color='black'
+    //             className="linka total-job"
+    //             type="link">
+    //             <a>
+    //                 Tìm <span style={{ fontWeight: 'bold' }}>{total}</span> việc bây giờ
+    //             </a>
+    //         </Button>
+    //     </Row> : null;
+    // }
 
     return (
         <>
@@ -68,7 +69,9 @@ export const Home = () => {
                     <Row justify='center' align='middle'>
                         <Col span={18}>
                             <Row justify='start' className="logo-container">
-                                <Typography.Link style={{ color: 'black' }} onClick={onPressGoHome}>{LogoName}</Typography.Link>
+                                <Typography.Link style={{ color: 'black', paddingTop: 15, paddingBottom: 15 }} onClick={onPressGoHome}>
+                                    <img style={{ height: 25 }} src={logo} className="App-logo" alt="logo" />
+                                </Typography.Link>
                             </Row>
                             <SearchForm
                                 fill
@@ -79,7 +82,7 @@ export const Home = () => {
                                 onChangeAddress={e => setAddress(e)}
                                 onPressSubmit={onPressSubmit}
                             />
-                            <TotalJobWaiting display={true} total={totalJob} />
+                            {/* <TotalJobWaiting display={true} total={totalJob} /> */}
                             <SearchRecentsTable
                                 display={true}
                                 items={recents}

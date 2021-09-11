@@ -9,7 +9,8 @@ import {
     FilterJobTypes,
     getJobDetailURL,
     LogoName,
-    getListJobURL
+    getListJobURL,
+    getTopJobDetailURL
 } from '../../global/helpers';
 import _ from 'lodash';
 import { ListJobs } from './components/ListJobs';
@@ -19,6 +20,7 @@ import { reducer, initialValues } from './reducer';
 import { jobsSuggestAction, loadCompletedAction, loading, resetAction, updateFormValues, updatePageAction } from './actions';
 import { SearchForm } from '../../components/SearchForm';
 import { ListJobSuggest } from './components/ListJobSuggest';
+import logo from '../../assets/logo_3.svg';
 const { Content, Footer } = Layout;
 
 const init = (initial) => {
@@ -75,7 +77,7 @@ export const ListJob = () => {
         updateForm({ keyword, address, time, jobType, page: page ? page : 1 });
 
         apis.getJobsSuggest().then(response => {
-            const jobs = Array.isArray(response?.data) ? response?.data : [];
+            const jobs = Array.isArray(response?.jobs) ? response?.jobs : [];
             setJobSuggest(jobs)
         })
     }
@@ -167,6 +169,11 @@ export const ListJob = () => {
         history.push({ pathname, state: item });
     }
 
+    const onPressTopJob = (item) => {
+        let pathname = getTopJobDetailURL(item)
+        history.push({ pathname, state: item });
+    }
+
     const onFilter = (filter) => {
         updateForm(filter);
         updateURL(filter?.form?.page || 1, filter);
@@ -178,7 +185,9 @@ export const ListJob = () => {
         <>
             <Row justify='space-between' align='middle' className="header">
                 <Col className="logo-header">
-                    <Typography.Link style={{ color: 'black' }} onClick={onPressGoHome}>{LogoName}</Typography.Link>
+                    <Typography.Link style={{ color: 'black' }} onClick={onPressGoHome}>
+                        <img style={{ height: 19 }} src={logo} className="App-logo" alt="logo" />
+                    </Typography.Link>
                 </Col>
             </Row>
             <Content>
@@ -215,7 +224,7 @@ export const ListJob = () => {
                             />
                         </Col>
                         <Col flex="27.5%">
-                            <ListJobSuggest items={suggests} onPressLink={onPressLink} />
+                            <ListJobSuggest items={suggests} onPressLink={onPressTopJob} />
                         </Col>
                     </Row>
                 </div>

@@ -28,6 +28,11 @@ export const getJobDetailURL = (item) => {
     return `/tim-viec/${jobTitleSlug || ''}-${item._id}`;
 }
 
+export const getTopJobDetailURL = (item) => {
+    const jobTitleSlug = item?.jobTitleSlug || slugify(item.jobTitle);
+    return `/tim-viec/top/${jobTitleSlug || ''}-${item._id}`;
+}
+
 export const slugify = (str: string, separator = "-") => {
     return str
         .toString()

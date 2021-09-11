@@ -127,7 +127,7 @@ const getJobDetail = (): CareerBuilderJob => {
 }
 
 async function scapeDetail(link: string, browser: puppeteer.Browser) {
-    let pageDetail = await createPage(browser);
+    let pageDetail = await createPage(browser, true);
     try {
         if (!pageDetail) {
             return null

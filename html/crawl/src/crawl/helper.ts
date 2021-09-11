@@ -17,7 +17,7 @@ export const slugify = (str: string, separator = "-") => {
 
 export const createPuppeteerBrowser = async () => {
     return await puppeteer.launch({
-        headless: false,
+        headless: true,
         defaultViewport: null,
         args: ['--no-sandbox', '--disable-setuid-sandbox']
     })

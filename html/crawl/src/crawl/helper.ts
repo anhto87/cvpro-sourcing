@@ -17,7 +17,7 @@ export const slugify = (str: string, separator = "-") => {
 
 export const createPuppeteerBrowser = async () => {
     return await puppeteer.launch({
-        headless: true,
+        headless: false,
         defaultViewport: null,
         args: ['--no-sandbox', '--disable-setuid-sandbox']
     })
@@ -30,11 +30,11 @@ export const createPage = async (browser: puppeteer.Browser) => {
         await page.setRequestInterception(true);
         await setHeader(page);
         page.on('request', (req) => {
-            if (req.resourceType() == 'stylesheet' || req.resourceType() == 'font' || req.resourceType() == 'image') {
-                req.abort();
-            } else {
+            // if (req.resourceType() == 'stylesheet' || req.resourceType() == 'font' || req.resourceType() == 'image') {
+            //     req.abort();
+            // } else {
                 req.continue();
-            }
+            // }
         });
         return page;
     } catch (err) {

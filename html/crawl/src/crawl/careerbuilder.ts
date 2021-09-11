@@ -164,7 +164,7 @@ async function scapeDetail(link: string, browser: puppeteer.Browser) {
         pageDetail = null;
         return jobDetail
     } catch (error) {
-        Logger.error(`link: ${error}`)
+        Logger.error(`link: ${link} ${error}`)
         await pageDetail?.close()
         pageDetail = null;
         return null
@@ -182,6 +182,9 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
         const items: Job[] = [];
         for (const job of jobs) {
             const jobDetail = await scapeDetail(job.link!, browser);
+            if (!jobDetail) {
+                return items;
+            }
             const item = convertToJob({ ...job, ...jobDetail })
             await saveJob(item);
             const number = (Math.floor(Math.random() * (maxDelayTime - minDelayTime)) + minDelayTime) * 1000;

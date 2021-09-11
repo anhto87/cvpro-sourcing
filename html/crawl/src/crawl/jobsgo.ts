@@ -150,7 +150,7 @@ async function scapeDetail(link: string, browser: puppeteer.Browser) {
         pageDetail = null;
         return jobDetail
     } catch (error) {
-        Logger.error(`link: ${error}`)
+        Logger.error(`link: ${link} ${error}`)
         await pageDetail?.close()
         pageDetail = null;
         return null
@@ -168,7 +168,7 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
         for (const job of jobs) {
             const jobDetail = await scapeDetail(job.link!, browser);
             if (!jobDetail) {
-                continue
+                return items;
             }
             const item = convertToJob({ ...job, ...jobDetail, jobId: Prefix.jobsGo + job.jobId });
             await saveJob(item);

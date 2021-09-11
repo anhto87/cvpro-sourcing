@@ -23,7 +23,7 @@ trait TraitCVProTop
         if ($response->status() === 200) {
             $body = $response->json();
 
-            return response()->json(['data' => $body['data']]);
+            return response()->json(['data' => $body]);
         }
 
         return response()->json(['jobs' => []]);

@@ -1,9 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { List, Skeleton, Divider, Typography, Row, Col, Button } from 'antd';
+import { List, Skeleton, Divider, Typography, Row, Col } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { timeAgo } from '../../../global/helpers';
-import { BsBookmark } from 'react-icons/bs';
 import { NoData } from '../../../components/NoData';
 const { Text, Paragraph, Link } = Typography;
 

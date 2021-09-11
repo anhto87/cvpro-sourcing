@@ -1,8 +1,8 @@
 import './home.css';
 import React, { useState, useEffect } from 'react';
 import { useHistory } from "react-router-dom";
-import { Row, Button, Form, Layout, Typography, Col } from 'antd';
-import { useLocalStorage, useTotalJobs } from '../../global/hooks';
+import { Row, Form, Layout, Typography, Col } from 'antd';
+import { useLocalStorage } from '../../global/hooks';
 import { getListJobURL, LogoName, StorageSearchRecents } from '../../global/helpers';
 import _ from 'lodash';
 import { SearchRecentsTable } from './components/SearchRecentsTable';

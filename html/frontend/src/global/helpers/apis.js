@@ -21,6 +21,10 @@ class API {
         return await fetchApi(`/jobs/${jobId}`, { method: "POST" });
     }
 
+    async getTopJobDetail({ jobId }) {
+        return await fetchApi(`/jobs/cvpro.top/${jobId}`, { method: "GET" });
+    }
+
     async getJobsSuggest() {
         return await fetchApi(`/jobs/cvpro.top`, { method: "GET" });
     }

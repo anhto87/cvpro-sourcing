@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Switch, Row, Tooltip, Divider, Typography, Col, Button } from 'antd';
+import { Row, Divider, Typography, Col, Button } from 'antd';
 import {
     FilterJobTypes,
     FilterTimes,

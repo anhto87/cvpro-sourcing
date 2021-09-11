@@ -1,3 +1,5 @@
+import { convertSuggestJob } from "../../global/helpers";
+
 /***
  *
  *
@@ -49,73 +51,4 @@ export const jobsSuggestAction = (jobs) => {
         type: JOB_SUGGEST,
         payload: convertSuggestJob(jobs)
     };
-};
-
-const convertSuggestJob = (jobs) => {
-    const items = [];
-    const maxLength = jobs.length > 10 ? 10 : jobs.length;
-    for (let index = 0; index < maxLength; index++) {
-        const job = jobs[index];
-        const _id = job?.id;
-        const jobId = job?.id;
-        const jobTitle = job?.job_title;
-        const companyLogo = job?.employer?.logo;
-        const company = job?.employer?.company;
-        const companyId = job?.employer?.id;
-        const jobDescription = job?.description;
-        const jobRequirement = (job?.educational_requirements || '') + '\n' + (job?.experience_requirements || '') + '\n' + job?.additional_requirements + '\n';
-        const salary = convertSalary(job?.salary, job?.salary_upto, job?.salary_currency);
-        const jobType = job?.job_type;
-        const jobLocations = [(job?.city_name || '') + (job?.state_name || '')];
-        const locations = [(job?.city_name || '') + (job?.state_name || '')];
-        const skills = [];
-        const skill = job?.skills || '';
-        if (skill.length > 0) {
-            skills.push(skill);
-        }
-        const benefits = [job?.benefits || ''];
-        const domain = 'cvpro.top';
-        const link = `https://cvpro.top/job/${jobId}`;
-        const onlineDate = job?.updated_at;
-        const publishedDate = job?.created_at;
-        const expiredDate = job?.deadline;
-        items.push({
-            expiredDate,
-            publishedDate,
-            link,
-            onlineDate,
-            jobType,
-            jobLocations,
-            skills,
-            benefits,
-            locations,
-            _id,
-            domain,
-            jobId,
-            jobTitle,
-            companyLogo,
-            company,
-            companyId,
-            jobDescription,
-            jobRequirement,
-            salary,
-        });
-    }
-    return items;
-};
-
-const convertSalary = (salary, salary_upto, salary_currency) => {
-    const formatter = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: salary_currency
-    });
-
-    if (typeof salary === 'number' && typeof salary_upto === 'number') {
-        const min = formatter.format(salary);
-        const max = formatter.format(salary_upto);
-
-        return `${min} - ${max}`;
-    }
-
-    return null;
 };

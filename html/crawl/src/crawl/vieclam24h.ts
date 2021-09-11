@@ -73,7 +73,7 @@ const getJobs = (): CareerBuilderJob[] => {
             }
             const location = jobDetailEles.length > 1 ? jobDetailEles[1].textContent?.trim() : '';
             if (location) {
-                locations = location.replace('...', '').replace(/ /g, '').split(',');
+                locations = location.replace('...', '').split(',').map(ele => ele.trim());
             }
             jobs.push({ jobId, jobTitle, company, link, domain, jobLocations: locations, locations, expiredDate, salary })
         } else {

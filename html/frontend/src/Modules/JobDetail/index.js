@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useHistory, useParams } from 'react-router-dom';
 import { Row, Col, Button, Form, Layout, Typography, Skeleton } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { timeAgo } from '../../global/helpers';
+import { convertSuggestJob, timeAgo } from '../../global/helpers';
 import { SearchForm } from '../../components/SearchForm';
 import { getListJobURL, LogoName } from '../../global/helpers';
 import apis from '../../global/helpers/apis';
@@ -24,6 +24,7 @@ export const JobDetail = () => {
     const [loading, setLoading] = useState(true);
     const [keyword, setKeyword] = useState('');
     const [address, setAddress] = useState('');
+    const isTopSuggest = location.pathname.includes("/tim-viec/top/");
 
     useEffect(() => {
         const jobItem = location.state;
@@ -45,18 +46,35 @@ export const JobDetail = () => {
         const components = (params?.id.split('-') || []);
         const jobId = components.length > 0 ? components[components.length - 1] : null;
         if (jobId) {
-            let res = await apis.getJobDetail({ jobId });
-            const status = res?.success === 'OK';
-            if (status) {
-                setJob(res.data);
-            } else {
+            if (isTopSuggest) {
+                let res = await apis.getTopJobDetail({ jobId });
+                const data = res?.data;
+                if (data) {
+                    const keys = Object.keys(data);
+                    if (keys.length > 0) {
+                        let key = keys[0];
+                        let jobTemp = data[key];
+                        let job = convertSuggestJob([jobTemp])[0];
+                        setJob(job);
+                        setLoading(false);
+                        return
+                    }
+                }
                 setJob(null);
+            } else {
+                let res = await apis.getJobDetail({ jobId });
+                const status = res?.success === 'OK';
+                if (status) {
+                    setJob(res.data);
+                } else {
+                    setJob(null);
+                }
             }
             setLoading(false);
         } else {
             setLoading(false);
         }
-    }, [params?.id]);
+    }, [params?.id, isTopSuggest]);
 
     const onPressGoHome = () => {
         history.push('/');

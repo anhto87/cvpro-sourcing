@@ -81,7 +81,6 @@ async function page(url: string, browser: puppeteer.Browser | undefined, domain:
         if (!page) {
             return [];
         }
-        await setHeader(page);
         Logger.info(`Starting load ${currentUrl}`);
         let items = await getJobInPage(currentUrl, newBrowser, page);
         await closePage(page);
@@ -95,42 +94,6 @@ async function page(url: string, browser: puppeteer.Browser | undefined, domain:
         Logger.error(err);
         return [];
         // throw new Error(err);
-    }
-}
-
-async function all(url: string, browser?: puppeteer.Browser, delayTime: number = 60, maxPage: number = 1000) {
-    try {
-        const number = delayTime * 1000;
-        await delay(number);
-        const newBrowser = browser || await createPuppeteerBrowser();
-        let nextPage: string | null | undefined = url;
-        let curentPage = 1;
-        while (nextPage) {
-            Logger.info(`Load data next page: ${nextPage}`);
-            let page = await createPage(newBrowser);
-            if (!page) {
-                page = null;
-                continue
-            }
-            await setHeader(page);
-            await getJobInPage(nextPage, newBrowser, page);
-            if (curentPage < maxPage) {
-                nextPage = await getNextPage(page, url);
-                curentPage += 1;
-                Logger.info(`Load set nextPage ${nextPage}`);
-            } else {
-                nextPage = null;
-                Logger.info(`Load set nextPage ${nextPage}`);
-            }
-        }
-        if (!browser) {
-            await newBrowser.close();
-        }
-        Logger.info(`Load getJobInPage done ${url}`);
-        return true
-    } catch (err) {
-        Logger.error(`Error: ${url} ${JSON.stringify(err)}`)
-        return false;
     }
 }
 
@@ -179,7 +142,6 @@ async function pageInfinite(url: string, browser?: puppeteer.Browser, maxItem: n
 }
 
 const Crawl = {
-    all,
     page,
     pageInfinite
 }

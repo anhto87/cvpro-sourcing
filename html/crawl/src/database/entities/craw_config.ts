@@ -4,15 +4,11 @@ import Logger from '../../crawl/Log';
 
 interface CrawConfig {
     name: string,
-    currentPage?: number,
-    totalPage?: number,
     page?: string
 }
 
 export const ConfigSchema: Schema<CrawConfig> = new Schema<CrawConfig>({
     name: String,
-    currentPage: Number,
-    totalPage: Number,
     page: String
 }, { timestamps: true });
 
@@ -32,8 +28,7 @@ export async function saveConfig(config: CrawConfig) {
     try {
         const newObj = clean(config);
         let record = await ConfigModel.findOne({
-            name: config.name,
-            totalPage: config.totalPage,
+            name: config.name
         })
         if (record) {
             await ConfigModel.updateOne({ _id: record._id }, newObj);

@@ -105,13 +105,16 @@ async function scapeDetail(link: string, browser: puppeteer.Browser) {
         if (!pageDetail) {
             return null
         }
-        await pageDetail.goto(link, { waitUntil: 'networkidle0', timeout: config.timeout });
+        await pageDetail.goto(link, { waitUntil: 'domcontentloaded', timeout: config.timeout });
+        await pageDetail.waitForSelector('.job-details__title', {
+            visible: true
+        })
         const jobDetail = await pageDetail.evaluate(getJobDetail);
         await closePage(pageDetail);
         pageDetail = null;
         return jobDetail
     } catch (error) {
-        Logger.error(`link: ${error}`)
+        Logger.error(`link: ${link} ${error}`)
         await pageDetail?.close()
         pageDetail = null;
         return null
@@ -120,18 +123,19 @@ async function scapeDetail(link: string, browser: puppeteer.Browser) {
 
 async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppeteer.Page) {
     try {
-        await page.goto(url, { waitUntil: 'networkidle0', timeout: config.timeout });
-        await page.evaluate(() => {
-            document.querySelector('div.search-page__job-preview')?.remove();
-        })
-        let nextPage = await getNextPage(page) || URLCraw.itviec;
+        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: config.timeout });
+        await page.waitForSelector('#jobs', {
+            visible: true,
+        });
+        await scrollToBottom(page);
         const jobs = await page.evaluate(getJobs);
+        let nextPage = await getNextPage(page) || URLCraw.itviec;
         await closePage(page);
         const items: Job[] = [];
         for (const job of jobs) {
             const jobDetail = await scapeDetail(job.link!, browser);
             if (!jobDetail) {
-                continue
+                return items;
             }
             const item = convertToJob({
                 ...job,

@@ -119,7 +119,7 @@ async function scapeDetail(link: string, browser: puppeteer.Browser) {
         pageDetail = null;
         return jobDetail
     } catch (error) {
-        Logger.error(`link: ${error}`)
+        Logger.error(`link: ${link} ${error}`)
         await pageDetail?.close()
         pageDetail = null;
         return null
@@ -144,7 +144,7 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
         for (const job of jobs) {
             const jobDetail = await scapeDetail(job.link!, browser);
             if (!jobDetail) {
-                continue
+                return items;
             }
             const publishedDate = convertTimeAgoToDate(jobDetail.publishedDate || '');
             const expiredDate = convertExpireDate(job.expiredDate || '');

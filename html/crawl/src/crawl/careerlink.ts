@@ -5,7 +5,7 @@ import { Job, saveConfig, saveJob } from '../database/entities';
 import Logger from './Log';
 import { CareerBuilderJob } from './careerbuilder';
 import { closePage, convertTimeAgoToDate, convertToJob, createPage, delay, scrollToBottom } from './helper';
-
+import { saveLog } from '../database/entities/log';
 
 const getNextPage = async (page: puppeteer.Page) => {
     const nextPageUrl = await page.evaluate(() => {
@@ -112,6 +112,14 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
         await scrollToBottom(page);
         let nextPage = await getNextPage(page) || URLCraw.careerLink;
         const jobs = await page.evaluate(getJobs);
+        if (jobs.length === 0) {
+            let html = await page.evaluate(() => {
+                return document.body.outerHTML;
+            })
+            if (html) {
+                saveLog({ name: URLConstants.careerLink, content: html })
+            }
+        }
         await closePage(page);
         const items: Job[] = [];
         for (const job of jobs) {

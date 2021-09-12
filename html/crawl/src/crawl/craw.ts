@@ -67,9 +67,9 @@ const getTotalItems = async (page: puppeteer.Page, url: string): Promise<number 
     return undefined;
 }
 
-async function page(url: string, browser: puppeteer.Browser | undefined, domain: string) {
+async function page(url: string, browser: puppeteer.Browser | undefined, domain: string, delayTime: number) {
     try {
-        const number = (Math.floor(Math.random() * (config.maxDelayTime - config.minDelayTime)) + config.minDelayTime) * 1000;
+        const number = delayTime * 1000;
         await delay(number)
         const configCraw = await getConfigCraw(domain);
         let currentUrl = url

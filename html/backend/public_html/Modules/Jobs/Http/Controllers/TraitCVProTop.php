@@ -9,11 +9,11 @@ trait TraitCVProTop
 {
     public function queryCVProTop(Request $request): \Illuminate\Http\JsonResponse
     {
-        $response = Http::get('https://nhanlucvietnam.net/api/jobs');
+        $response = Http::get('https://nhanlucvietnam.net/api/cvpro/query');
         if ($response->status() === 200) {
             $body = $response->json();
 
-            return response()->json(['jobs' => $body['data']]);
+            return response()->json(['jobs' => $body]);
         }
     }
 

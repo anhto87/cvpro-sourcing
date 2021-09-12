@@ -80,13 +80,3 @@ services:
             - MONGODB_ROOT_PASSWORD=88888888
         volumes:
             - ./databases/mongodb/cvprodb/:/bitnami/mongodb
-    puppeteer:
-        restart: unless-stopped
-        build:
-          context: ./sources/puppeteer/
-        networks:
-          - god
-        volumes:
-          - ./databases/puppeteer:/puppeteer    
-          - ../html/crawl/:/crawl
-        command: tail -f /dev/null              

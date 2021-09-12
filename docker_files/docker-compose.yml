@@ -14,10 +14,8 @@ services:
         expose:
             - 80
         environment:
-            - "VIRTUAL_HOST=api.cvpro.local"
+            - "VIRTUAL_HOST=api-job.cvpro.top"
             - "VIRTUAL_PORT=80"
-            - "LETSENCRYPT_HOST=api.cvpro.local"
-            - "LETSENCRYPT_EMAIL=admin@cvpro.co"
         volumes:
             - ../html/backend:/var/www/html/
             - ./sources/zoneinfo/Asia/Ho_Chi_Minh:/etc/localtime:ro
@@ -30,10 +28,8 @@ services:
         expose:
             - 80
         environment:
-            - "VIRTUAL_HOST=cvpro.local,cvpro.co"
+            - "VIRTUAL_HOST=job.cvpro.top"
             - "VIRTUAL_PORT=80"
-            - "LETSENCRYPT_HOST=cvpro.local,cvpro.co"
-            - "LETSENCRYPT_EMAIL=admin@cvpro.co"
         volumes:
             - ../html/frontend/:/var/www/html/:cached
             - ./sources/zoneinfo/Asia/Ho_Chi_Minh:/etc/localtime:ro

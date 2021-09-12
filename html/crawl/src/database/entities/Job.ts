@@ -80,7 +80,7 @@ export const JobSchema: Schema<Job> = new Schema<Job>({
   publishedTimestamp: Number,
   expiredTimestamp: Number,
   onlineTimestamp: Number,
-});
+}, { timestamps: true });
 
 export async function saveJob(job: Job) {
   try {

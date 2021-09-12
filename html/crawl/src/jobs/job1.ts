@@ -7,8 +7,13 @@ import { Browser } from "puppeteer";
 
 async function getJobs(url: string, browser: Browser, domain: string, maxPage: number = 1): Promise<boolean> {
     for (let index = 0; index < maxPage; index++) {
-        await Crawl.page(url, browser, domain);
+        let items = await Crawl.page(url, browser, domain);
+        if (items.length === 0) {
+            Logger.info(`Craw $${domain} done`)
+            return false;
+        }
     }
+    Logger.info(`Craw $${domain} done`)
     return true
 }
 

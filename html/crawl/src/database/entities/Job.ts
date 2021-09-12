@@ -94,14 +94,14 @@ export async function saveJob(job: Job) {
     let record = await Jobs.findOneAndUpdate({ jobId: cleanJob.jobId }, { $set: { ...cleanJob } }, { new: true, upsert: true, useFindAndModify: false });
     if (record) {
       const domain = cleanJob.domain as string;
-      let total = await Jobs.find({ domain }).count();;
+      let total = await Jobs.find({ domain }).countDocuments();;
       Logger.info(`updateJob successful total: ${total} ${record?.jobId} ${record.link}`);
       return true
     } else {
       let create = await Jobs.create(cleanJob);
       if (create) {
         const domain = cleanJob.domain as string;
-        let total = await Jobs.find({ domain }).count();;
+        let total = await Jobs.find({ domain }).countDocuments();;
         Logger.info(`saveJob successful total: ${total} ${create?.jobId} ${create.link}`);
         return true
       }

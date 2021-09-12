@@ -46,6 +46,7 @@ async function scrapeWithSchedule() {
         await newBrowser.close();
         process.exit();
     } catch (error) {
+        console.log(error);
         process.exit();
     }
 }

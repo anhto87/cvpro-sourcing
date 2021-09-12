@@ -6,8 +6,8 @@ use Jenssegers\Mongodb\Eloquent\Model;
 
 class Jobs extends Model
 {
-    protected string $connection = 'mongodb';
-    protected string $collection = 'jobs';
-    protected array  $guarded    = [];
+    protected  $connection = 'mongodb';
+    protected  $collection = 'jobs';
+    protected  $guarded    = [];
     protected $hidden = ['__v'];
 }

@@ -38,7 +38,6 @@ class JobsController
     public function query(FilterQueryBuilder $filters)
     {
         $data = $this->request->only(['filters', 'job_type', 'sort_by', 'x_last', 'locations']);
-        $response = Http::get('https://nhanlucvietnam.net/api/cvpro/query');
         $keyword   = $data['filters'] ?? '';
         $jobType   = $data['job_type'] ?? '';
         $sortBy    = $data['sort_by'] ?? '';
@@ -111,7 +110,32 @@ class JobsController
             'limit' => $limit
         ];
 
-        return response()->json(['success' => 'OK', 'data' => data_get($data, 'data'), 'meta' => $meta]);
+        $data = data_get($data, 'data');
+
+        $this->injectExternalJobs($keyword, $data);
+
+        return response()->json(['success' => 'OK', 'data' => $data, 'meta' => $meta]);
+    }
+
+    protected function injectExternalJobs($keyword, &$data)
+    {
+        $response = Http::get('https://nhanlucvietnam.net/api/cvpro/query?q=' . $keyword);
+        if (isset($_GET['t'])) {
+            $json = $response->json();
+            $finalData = [];
+            foreach ($data as $key => $item) {
+                $random = rand(2,5);
+
+                if ($key % $random == 0) {
+                    $finalData[] = $item;
+
+                    $json[$key]['jobFrom'] = '';
+                    $finalData[] = $json[$key];
+                }
+            }
+
+            $data = $finalData;
+        }
     }
 
     protected function appendXDay(&$query, $xLast)

@@ -5,6 +5,7 @@ namespace Modules\Jobs\Http\Controllers;
 use App\Services\FilterQueryBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Http;
 use Modules\Jobs\Repositories\JobsRepository;
 use MongoDB\BSON\UTCDateTime;
 
@@ -37,7 +38,7 @@ class JobsController
     public function query(FilterQueryBuilder $filters)
     {
         $data = $this->request->only(['filters', 'job_type', 'sort_by', 'x_last', 'locations']);
-
+        $response = Http::get('https://nhanlucvietnam.net/api/cvpro/query');
         $keyword   = $data['filters'] ?? '';
         $jobType   = $data['job_type'] ?? '';
         $sortBy    = $data['sort_by'] ?? '';

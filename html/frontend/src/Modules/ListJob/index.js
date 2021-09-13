@@ -10,7 +10,8 @@ import {
     getJobDetailURL,
     LogoName,
     getListJobURL,
-    getTopJobDetailURL
+    getTopJobDetailURL,
+    Types
 } from '../../global/helpers';
 import _ from 'lodash';
 import { ListJobs } from './components/ListJobs';
@@ -165,7 +166,7 @@ export const ListJob = () => {
     }
 
     const onPressLink = (item) => {
-        let pathname = getJobDetailURL(item)
+        let pathname = item.type === Types.top ? getTopJobDetailURL(item) : getJobDetailURL(item);
         history.push({ pathname, state: item });
     }
 

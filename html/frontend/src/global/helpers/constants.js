@@ -30,3 +30,8 @@ export const FilterJobTypes = {
     online: 'online',
     other: 'khác',
 }
+
+export const Types = {
+    top: "top",
+    normal: 'normal'
+}

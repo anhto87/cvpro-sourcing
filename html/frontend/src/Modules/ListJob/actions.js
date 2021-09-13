@@ -1,4 +1,4 @@
-import { convertSuggestJob } from "../../global/helpers";
+import { convertSuggestJob, convertToJob } from "../../global/helpers";
 
 /***
  *
@@ -27,9 +27,18 @@ export const updatePageAction = (payload) => {
 };
 
 export const loadCompletedAction = ({ jobs, totalJobs, page, totalPage, limit }) => {
+    const newItems = [];
+    for (const job of jobs) {
+        if (job?.job_title) {
+            let newJob = convertToJob(job);
+            newItems.push(newJob);
+        } else {
+            newItems.push(job);
+        }
+    }
     return {
         type: LOAD_COMPLETE,
-        payload: { jobs, totalJobs, page, totalPage, limit }
+        payload: { jobs: newItems, totalJobs, page, totalPage, limit }
     };
 };
 

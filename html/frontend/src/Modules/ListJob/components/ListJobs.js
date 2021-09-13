@@ -60,7 +60,7 @@ export const ListJobs = ({ items, isLoading, page, totalPage, totalJob, loadMore
                                         {Array.isArray(item?.skills) && item.skills.length > 0 &&
                                             <Row wrap={false} style={{ paddingRight: 50 }}>
                                                 <Paragraph style={{ marginBottom: 0 }}>
-                                                    {t('home.skill')}
+                                                    {`${t('home.skill')}: `}
                                                     <Text>{item.skills.map(ele => ele.trim()).join(', ')}.</Text>
                                                 </Paragraph>
                                             </Row>

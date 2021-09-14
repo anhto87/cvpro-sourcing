@@ -91,7 +91,7 @@ export const convertToJob = (job) => {
     }
     const benefits = [job?.benefits || ''];
     const domain = 'cvpro.top';
-    const link = `https://cvpro.top/job/${jobId}`;
+    const link = `https://jobs.cvpro.top/job/${jobId}`;
     const onlineDate = job?.updated_at;
     const publishedDate = job?.created_at;
     const expiredDate = job?.deadline;

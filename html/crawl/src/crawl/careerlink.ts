@@ -117,9 +117,15 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
                 return document.body.outerHTML;
             })
             if (html) {
+                const today = new Date().toISOString();
+                await page.screenshot({
+                    path: `./src/crawl/images/debug/careerlink/${today}.png`,
+                    fullPage: true
+                })
                 saveLog({ name: URLConstants.careerLink, content: html })
             }
         }
+        
         await closePage(page);
         const items: Job[] = [];
         for (const job of jobs) {

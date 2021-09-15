@@ -4,7 +4,7 @@ import config from '../database/config';
 import { Job, saveConfig, saveJob } from '../database/entities';
 import Logger from './Log';
 import { CareerBuilderJob } from './careerbuilder';
-import { closePage, convertToJob, createPage, delay, scrollToBottom } from './helper';
+import { closePage, convertToJob, createPage, delay, screenShotLog, scrollToBottom } from './helper';
 
 
 const getNextPage = async (page: puppeteer.Page) => {
@@ -190,6 +190,10 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
         await scrollToBottom(page);
         let nextPage = await getNextPage(page) || URLCraw.vieclam24h;
         const jobs = await page.evaluate(getJobs);
+        if (jobs.length === 0) {
+            await screenShotLog(page, URLConstants.vieclam24h);
+        }
+
         await closePage(page);
         const items: Job[] = [];
         for (const job of jobs) {

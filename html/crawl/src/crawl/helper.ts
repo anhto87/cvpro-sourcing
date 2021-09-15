@@ -1,8 +1,29 @@
 import moment from 'moment';
 import puppeteer from 'puppeteer';
 import { Job } from '../database/entities';
+import { saveLog } from '../database/entities/log';
 import { CareerBuilderJob } from './careerbuilder';
 import Logger from './Log';
+import Fs from 'fs';
+import Path from 'path';
+
+function createImagesFolder(domain: string) {
+    const pathImages = Path.resolve(__dirname, `images`);
+    if (!Fs.existsSync(pathImages)) {
+        Fs.mkdirSync(pathImages)
+    }
+    console.log(1)
+    const pathDebug = Path.resolve(__dirname, `images/debug`);
+    if (!Fs.existsSync(pathDebug)) {
+        Fs.mkdirSync(pathDebug)
+    }
+    console.log(2)
+    const pathDomain = Path.resolve(__dirname, `images/debug/${domain}`);
+    console.log(pathDomain)
+    if (!Fs.existsSync(pathDomain)) {
+        Fs.mkdirSync(pathDomain)
+    }
+}
 
 export const slugify = (str: string, separator = "-") => {
     return str
@@ -40,6 +61,24 @@ export const createPage = async (browser: puppeteer.Browser, isBlockImage: boole
     } catch (err) {
         return null;
     }
+}
+
+export const screenShotLog = async (page: puppeteer.Page, domain: string) => {
+    let html = await page.evaluate(() => {
+        return document.body.outerHTML;
+    })
+    if (html) {
+        const components = domain.split('\/\/');
+        const folderName = components.length > 1 ? components[1] : domain;
+        createImagesFolder(folderName);
+        const today = new Date().toISOString();
+        await page.screenshot({
+            path: `./src/crawl/images/debug/${folderName}/${today}.png`,
+            fullPage: true
+        })
+        saveLog({ name: domain, content: html })
+    }
+    return true
 }
 
 export const closePage = async (page: puppeteer.Page) => {

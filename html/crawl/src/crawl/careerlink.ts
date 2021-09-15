@@ -4,7 +4,7 @@ import config from '../database/config';
 import { Job, saveConfig, saveJob } from '../database/entities';
 import Logger from './Log';
 import { CareerBuilderJob } from './careerbuilder';
-import { closePage, convertTimeAgoToDate, convertToJob, createPage, delay, scrollToBottom } from './helper';
+import { closePage, convertTimeAgoToDate, convertToJob, createPage, delay, screenShotLog, scrollToBottom } from './helper';
 import { saveLog } from '../database/entities/log';
 
 const getNextPage = async (page: puppeteer.Page) => {
@@ -111,26 +111,10 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
         await page.goto(url, { waitUntil: 'networkidle0', timeout: config.timeout });
         await scrollToBottom(page);
         let nextPage = await getNextPage(page) || URLCraw.careerLink;
-        await page.waitForTimeout(10000);
         const jobs = await page.evaluate(getJobs);
         if (jobs.length === 0) {
-            let html = await page.evaluate(() => {
-                return document.body.outerHTML;
-            })
-            if (html) {
-                const today = new Date().toISOString();
-                await page.screenshot({
-                    path: `./src/crawl/images/debug/careerlink/${today}.png`,
-                    fullPage: true
-                })
-                saveLog({ name: URLConstants.careerLink, content: html })
-            }
+            await screenShotLog(page, URLConstants.careerLink);
         }
-        const today = new Date().toISOString();
-        await page.screenshot({
-            path: `./src/crawl/images/debug/careerlink/${today}.png`,
-            fullPage: true
-        })
         await closePage(page);
         const items: Job[] = [];
         for (const job of jobs) {

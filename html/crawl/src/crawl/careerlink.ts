@@ -111,6 +111,7 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
         await page.goto(url, { waitUntil: 'networkidle0', timeout: config.timeout });
         await scrollToBottom(page);
         let nextPage = await getNextPage(page) || URLCraw.careerLink;
+        await page.waitForTimeout(10000);
         const jobs = await page.evaluate(getJobs);
         if (jobs.length === 0) {
             let html = await page.evaluate(() => {
@@ -125,7 +126,11 @@ async function getJobInPage(url: string, browser: puppeteer.Browser, page: puppe
                 saveLog({ name: URLConstants.careerLink, content: html })
             }
         }
-        
+        const today = new Date().toISOString();
+        await page.screenshot({
+            path: `./src/crawl/images/debug/careerlink/${today}.png`,
+            fullPage: true
+        })
         await closePage(page);
         const items: Job[] = [];
         for (const job of jobs) {

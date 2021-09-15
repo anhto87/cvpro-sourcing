@@ -12,6 +12,7 @@
     "dev:job1": "ts-node ./src/jobs/job1.ts",
     "dev:vietnamwork": "ts-node ./src/jobs/vietnamwork.ts",
     "dev:craw": "ts-node ./src/craw.ts",
+    "sync": "rsync -av admin@18.142.129.159:/mnt/efs/fs1/html/crawl/src/crawl/images/debug /Users/dotn/Outsource/cv_pro/cvpro-sourcing/html/crawl/src/crawl/images",
     "vietnamwork": "pm2 start ./build/src/jobs/vietnamwork.js --name \"craw_vietnamwork\"",
     "job": "pm2 start ./build/src/jobs/job1.js --name \"craw_job\""
   },

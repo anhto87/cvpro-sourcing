@@ -120,22 +120,18 @@ class JobsController
     protected function injectExternalJobs($keyword, &$data)
     {
         $response = Http::get('https://nhanlucvietnam.net/api/cvpro/query?q=' . $keyword);
-        if (isset($_GET['t'])) {
-            $json = $response->json();
-            $finalData = [];
-            foreach ($data as $key => $item) {
-                $random = rand(2,5);
-
-                if ($key % $random == 0) {
-                    $finalData[] = $item;
-
-                    $json[$key]['jobFrom'] = '';
-                    $finalData[] = $json[$key];
-                }
+        $json = $response->json();
+        $finalData = [];
+        foreach ($data as $key => $item) {
+            $random = rand(2,3);
+            $finalData[] = $item;
+            if ($key % $random == 0) {
+                $json[$key]['jobFrom'] = 'vhr';
+                $finalData[] = $json[$key];
             }
-
-            $data = $finalData;
         }
+
+        $data = $finalData;
     }
 
     protected function appendXDay(&$query, $xLast)

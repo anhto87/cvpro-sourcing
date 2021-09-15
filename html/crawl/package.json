@@ -11,6 +11,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev:job1": "ts-node ./src/jobs/job1.ts",
     "dev:vietnamwork": "ts-node ./src/jobs/vietnamwork.ts",
+    "dev:craw": "ts-node ./src/craw.ts",
     "vietnamwork": "pm2 start ./build/src/jobs/vietnamwork.js --name \"craw_vietnamwork\"",
     "job": "pm2 start ./build/src/jobs/job1.js --name \"craw_job\""
   },

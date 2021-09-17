@@ -47,16 +47,19 @@ export const createPuppeteerBrowser = async () => {
 export const createPage = async (browser: puppeteer.Browser, isBlockImage: boolean = false) => {
     try {
         let page = await browser.newPage();
-        await page.setViewport({ width: 1280, height: 1080 });
-        await page.setRequestInterception(true);
+        await page.setViewport({ width: 1600, height: 1300 });
         await setHeader(page);
-        page.on('request', (req) => {
-            if (isBlockImage && req.resourceType() == 'image') {
-                req.abort();
-            } else {
-                req.continue();
-            }
-        });
+        if (isBlockImage) {
+            await page.setRequestInterception(true);
+            page.on('request', (req) => {
+                if (isBlockImage && req.resourceType() == 'image') {
+                    req.abort();
+                } else {
+                    req.continue();
+                }
+            });
+        }
+
         return page;
     } catch (err) {
         return null;
